@@ -1,0 +1,81 @@
+service: iotv-api
+
+custom:
+  stage: ${opt:stage}
+environment:
+
+
+provider:
+  name: aws
+  role: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_ROLE_ARN}"
+  runtime: go1.x
+  versionFunctions: false
+
+
+package:
+  individually: true
+  exclude:
+  - ./**
+
+
+functions:
+  graphql:
+    awsKmsKeyArn: "{ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
+    handler: bin/graphql
+    environment:
+      JWT_SECRET: "${ssm:/services/iotv-api/${opt:stage}/JWT_SECRET~true}"
+    events:
+      - http:
+          path: /
+          method: post
+          cors: true
+    package:
+      include:
+      - bin/graphql
+
+  onVideoTranscodingComplete:
+    awsKmsKeyArn: "{ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
+    handler: bin/on_video_transcoding_complete
+    events:
+      - sns:
+          arn: "${ssm:/services/iotv-api/${opt:stage}/VIDEO_ENCODER_COMPLETE_ARN}"
+    package:
+      include:
+      - bin/on_video_transcoding_complete
+
+  #  onVideoTranscodingError:
+  #    handler: bin/on_video_transcoding_error
+  #    events:
+  #      - sns:
+  #          arn: ${self:custom.snsTopics.onVideoTranscodingError.${opt:stage, self:provider.stage}}
+  #    package:
+  #      include:
+  #        - bin/on_video_transcoding_error
+  #  onVideoTranscodingProgressing:
+  #    handler: bin/on_video_transcoding_progressing
+  #    events:
+  #      - sns:
+  #          arn: ${self:custom.snsTopics.onVideoTranscodingProgressing.${opt:stage, self:provider.stage}}
+  #    package:
+  #      include:
+  #        - bin/on_video_transcoding_progressing
+  #  onVideoTranscodingWarning:
+  #    handler: bin/on_video_transcoding_warning
+  #    events:
+  #      - sns:
+  #          arn: ${self:custom.snsTopics.onVideoTranscodingWarning.${opt:stage, self:provider.stage}}
+  #    package:
+  #      include:
+  #        - bin/on_video_transcoding_warning
+
+  onVideoUploadComplete:
+    awsKmsKeyArn: "{ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
+    handler: bin/on_video_upload_complete
+    environment:
+      WIDESCREEN_FHD_PRESET_ID: "${ssm:/services/iotv-api/${opt:stage}/WIDESCREEN_FHD_PRESET_ID}"
+    events:
+      - sns:
+          arn: "${ssm:/services/iotv-api/${opt:stage}/SOURCE_VIDEO_UPLOADED_ARN}"
+    package:
+      include:
+      - bin/on_video_upload_complete
