@@ -20,13 +20,13 @@ package:
 
 functions:
   graphql:
-    awsKmsKeyArn: "{ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
+    awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
     handler: bin/graphql
     environment:
       JWT_SECRET: "${ssm:/services/iotv-api/${opt:stage}/JWT_SECRET~true}"
     events:
       - http:
-          path: /
+          path: /graphql
           method: post
           cors: true
     package:
@@ -34,7 +34,7 @@ functions:
       - bin/graphql
 
   onVideoTranscodingComplete:
-    awsKmsKeyArn: "{ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
+    awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
     handler: bin/on_video_transcoding_complete
     events:
       - sns:
@@ -69,7 +69,7 @@ functions:
   #        - bin/on_video_transcoding_warning
 
   onVideoUploadComplete:
-    awsKmsKeyArn: "{ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
+    awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
     handler: bin/on_video_upload_complete
     environment:
       WIDESCREEN_FHD_PRESET_ID: "${ssm:/services/iotv-api/${opt:stage}/WIDESCREEN_FHD_PRESET_ID}"

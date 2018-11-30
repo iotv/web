@@ -7,6 +7,9 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/graph-gophers/graphql-go"
 	"gitlab.com/iotv/services/iotv-api/resolvers"
+	"gitlab.com/iotv/services/iotv-api/schema"
+	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
+	"io/ioutil"
 )
 
 type handler struct {
@@ -31,15 +34,15 @@ func (h *handler) GraphQL(ctx context.Context, e events.APIGatewayProxyRequest) 
 }
 
 func main() {
+	// FIXME: handle all the errors
+	schemaFile, _ := schema.Assets.Open("/schema.graphql")
+	schemaBuf, _ := ioutil.ReadAll(schemaFile)
+	dynamoDB, _ := dynamodb.NewService()
+	root, _ := graphql.ParseSchema(string(schemaBuf), &resolvers.RootResolver{
+		DynamoService: dynamoDB,
+	})
 	h := handler{
-		schema: graphql.MustParseSchema(`
-                schema {
-                        query: Query
-                }
-                type Query {
-					hello: String!
-                }
-        `, &resolvers.RootResolver{}),
+		schema: root,
 	}
 	lambda.Start(h.GraphQL)
 }

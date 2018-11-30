@@ -1,0 +1,33 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query {
+    me: User!
+}
+
+type Mutation {
+    createUserWithPassword(
+        email: String!
+        password: String!
+        userName: String!
+    ): UserAuthContainer!
+    loginWithEmailAndPassword(
+        email: String!
+        password: String!
+    ): UserAuthContainer!
+}
+
+type User {
+    id: ID!
+    email: String!
+    isEmailConfirmed: Boolean!
+    realName: String
+    userName: String!
+}
+
+type UserAuthContainer {
+    token: String!
+    user: User!
+}

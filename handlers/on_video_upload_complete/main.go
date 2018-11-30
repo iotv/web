@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/lucsky/cuid"
-	"gitlab.com/iotv/services/iotv-api/services/database"
+	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
 	"gitlab.com/iotv/services/iotv-api/services/elastictranscoder"
 	"gitlab.com/iotv/services/iotv-api/services/logger"
 	"path"
@@ -18,9 +18,9 @@ type Response struct {
 }
 
 type handler struct {
-	DB        database.Database
-	ETService elastictranscoder.Service
-	Logger    logger.Logger
+	DynamoDBService dynamodb.Service
+	ETService       elastictranscoder.Service
+	Logger          logger.Logger
 }
 
 func (h *handler) OnVideoUploadComplete(ctx context.Context, e events.SNSEvent) (Response, error) {
@@ -39,7 +39,7 @@ func (h *handler) OnVideoUploadComplete(ctx context.Context, e events.SNSEvent) 
 						defer s3Sync.Done()
 
 						_, videoId := path.Split(s3Record.S3.Object.Key)
-						if err := h.DB.UpdateSourceVideoIsFullyUploaded(ctx, videoId, true); err != nil {
+						if err := h.DynamoDBService.UpdateSourceVideoIsFullyUploaded(ctx, videoId, true); err != nil {
 							// FIXME handle error
 						}
 						// FIXME: capture response
@@ -59,12 +59,12 @@ func (h *handler) OnVideoUploadComplete(ctx context.Context, e events.SNSEvent) 
 
 func main() {
 	log := logger.NewLogger()
-	db, _ := database.NewDatabase()
+	dynamodb, _ := dynamodb.NewService()
 	et, _ := elastictranscoder.NewService()
 	h := handler{
-		DB:        db,
-		ETService: et,
-		Logger:    log,
+		DynamoDBService: dynamodb,
+		ETService:       et,
+		Logger:          log,
 	}
 	lambda.Start(h.OnVideoUploadComplete)
 }

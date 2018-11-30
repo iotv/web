@@ -8,12 +8,15 @@ import (
 
 type Service interface {
 	CreateUserWithEmailAndPassword(ctx context.Context, emailAddress, userName, hashedPassword string) (*User, error)
+	CreateVideoSegment(ctx context.Context, videoSegmentId string, originatingSourceVideoId *string) (*VideoSegment, error)
+	GetUserById(ctx context.Context, id string) (*User, error)
+	UpdateSourceVideoIsFullyUploaded(ctx context.Context, sourceVideoId string, isFullyUploaded bool) error
 }
 
 type config struct {
-	authenticationsTable string
-	usersTable           string
-	dynamodb             *dynamodb.DynamoDB
+	emailAuthenticationsTable string
+	usersTable                string
+	dynamoDB                  *dynamodb.DynamoDB
 }
 
 func NewService() (Service, error) {
@@ -21,6 +24,6 @@ func NewService() (Service, error) {
 	sess, _ := session.NewSession()
 
 	return &config{
-		dynamodb: dynamodb.New(sess),
+		dynamoDB: dynamodb.New(sess),
 	}, nil
 }

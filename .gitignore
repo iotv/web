@@ -9,3 +9,6 @@ vendor
 
 # terraform
 .terraform/**
+
+# Jetbrains
+.idea/**

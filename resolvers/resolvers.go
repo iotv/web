@@ -2,17 +2,14 @@ package resolvers
 
 import (
 	"context"
-	"gitlab.com/iotv/services/iotv-api/utilities"
 	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
+	"gitlab.com/iotv/services/iotv-api/utilities"
 )
 
-type RootResolver struct{
-	dynamoService dynamodb.Service
+type RootResolver struct {
+	DynamoService dynamodb.Service
 }
 
-func (_ *RootResolver) Hello() string {
-	return "world"
-}
 
 func (r *RootResolver) CreateUserWithPassword(ctx context.Context, args struct{ Email, Password, UserName string }) (*UserAuthContainer, error) {
 	// FIXME: validate password/email
@@ -22,14 +19,23 @@ func (r *RootResolver) CreateUserWithPassword(ctx context.Context, args struct{ 
 		return nil, err
 	}
 
-	if user, err := r.dynamoService.CreateUserWithEmailAndPassword(ctx, args.Email, args.UserName, *hashedPassword); err != nil {
-		// Make sure error is friendly
+	if user, err := r.DynamoService.CreateUserWithEmailAndPassword(ctx, args.Email, args.UserName, *hashedPassword); err != nil {
+		// FIXME Make sure error is friendly
 		return nil, err
 	} else {
-		return &UserAuthContainer{
-			userId: user.Id,
-
-		}, nil
+		if token, err := utilities.SignJWT(user.UserId); err != nil {
+			// FIXME: make error friendly
+			return nil, err
+		} else {
+			return &UserAuthContainer{
+				r:      r,
+				token:  token,
+				userId: user.UserId,
+			}, nil
+		}
 	}
+}
+
+func (r *RootResolver) LoginWithEmailAndPassword(ctx context.Context, args struct{ Email, Password string }) (*UserAuthContainer, error) {
 	return nil, nil
 }

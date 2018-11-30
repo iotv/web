@@ -1,11 +1,13 @@
 package utilities
 
 import (
-	"io"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/argon2"
+	"io"
+	"os"
 )
 
 // The current recommended time value for interactive logins.
@@ -34,4 +36,14 @@ func HashPassword(password string) (*string, error) {
 
 	encoded := fmt.Sprintf("$argon2i$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, RecommendedMemory, RecommendedTime, RecommendedThreads, sstr, hstr)
 	return &encoded, nil
+}
+
+func SignJWT(userId string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+		"sub": userId,
+		"aud": "iotv-api",
+	})
+
+	secret := os.Getenv("JWT_SECRET")
+	return token.SignedString([]byte(secret))
 }

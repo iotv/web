@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	awsS3 "github.com/aws/aws-sdk-go/service/s3"
-	"gitlab.com/iotv/services/iotv-api/services/database"
+	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
 	"gitlab.com/iotv/services/iotv-api/services/elastictranscoder"
 	"gitlab.com/iotv/services/iotv-api/services/logger"
 	"gitlab.com/iotv/services/iotv-api/services/s3"
@@ -21,10 +21,10 @@ type Response struct {
 }
 
 type handler struct {
-	DB        database.Database
-	ETService elastictranscoder.Service
-	Logger    logger.Logger
-	S3Service s3.Service
+	DynamoDBService dynamodb.Service
+	ETService       elastictranscoder.Service
+	Logger          logger.Logger
+	S3Service       s3.Service
 }
 
 func (h *handler) OnVideoTranscodingComplete(ctx context.Context, e events.SNSEvent) (Response, error) {
@@ -48,7 +48,7 @@ func (h *handler) OnVideoTranscodingComplete(ctx context.Context, e events.SNSEv
 							Host:   "s3.amazonaws.com",
 							Path:   path.Join(os.Getenv("TRANSCODING_BUCKET")),
 						}
-						if _, err := h.DB.CreateVideoSegment(ctx, objectUrl.String(), aws.String(etEvent.Outputs[0].Key)); err != nil {
+						if _, err := h.DynamoDBService.CreateVideoSegment(ctx, objectUrl.String(), aws.String(etEvent.Outputs[0].Key)); err != nil {
 							// FIXME: handle error
 						}
 					}(object)
@@ -64,14 +64,14 @@ func (h *handler) OnVideoTranscodingComplete(ctx context.Context, e events.SNSEv
 
 func main() {
 	log := logger.NewLogger()
-	db, _ := database.NewDatabase()
+	dynamodb, _ := dynamodb.NewService()
 	et, _ := elastictranscoder.NewService()
 	s3Svc, _ := s3.NewService()
 	h := handler{
-		DB:        db,
-		ETService: et,
-		Logger:    log,
-		S3Service: s3Svc,
+		DynamoDBService: dynamodb,
+		ETService:       et,
+		Logger:          log,
+		S3Service:       s3Svc,
 	}
 	lambda.Start(h.OnVideoTranscodingComplete)
 }
