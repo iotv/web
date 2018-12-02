@@ -10,6 +10,7 @@ import (
 	"gitlab.com/iotv/services/iotv-api/schema"
 	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
 	"io/ioutil"
+	"gitlab.com/iotv/services/iotv-api/utilities"
 )
 
 type handler struct {
@@ -24,7 +25,11 @@ func (h *handler) GraphQL(ctx context.Context, e events.APIGatewayProxyRequest) 
 	}
 	// FIXME: handle error
 	json.Unmarshal([]byte(e.Body), &params)
-	response := h.schema.Exec(ctx, params.Query, params.OperationName, params.Variables)
+
+	// FIXME: handle error
+	jwtCtx, _ := utilities.ValidateJWTForContext(ctx, e)
+
+	response := h.schema.Exec(jwtCtx, params.Query, params.OperationName, params.Variables)
 	// FIXME: handle error
 	respBody, _ := json.Marshal(response)
 	return events.APIGatewayProxyResponse{

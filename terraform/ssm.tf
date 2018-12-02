@@ -23,6 +23,38 @@ resource "aws_ssm_parameter" "jwt_secret" {
   value = "${random_string.jwt_secret.result}"
 }
 
+resource "aws_ssm_parameter" "email_authentications_table" {
+  description = "The email authentications DynamoDB table"
+  name        = "/services/iotv-api/${var.stage}/EMAIL_AUTHENTICATIONS_TABLE"
+
+  tags {
+    Application = "iotv-api"
+    Terraform   = "true"
+    Name        = "email authentications DynamoDB table"
+    Repo        = "https://gitlab.com/iotv/services/iotv-api"
+    Stage       = "${var.stage}"
+  }
+
+  type  = "String"
+  value = "${aws_dynamodb_table.email_authentications.name}"
+}
+
+resource "aws_ssm_parameter" "users_table" {
+  description = "The users DynamoDB table"
+  name        = "/services/iotv-api/${var.stage}/USERS_TABLE"
+
+  tags {
+    Application = "iotv-api"
+    Terraform   = "true"
+    Name        = "users DynamoDB table"
+    Repo        = "https://gitlab.com/iotv/services/iotv-api"
+    Stage       = "${var.stage}"
+  }
+
+  type  = "String"
+  value = "${aws_dynamodb_table.users.name}"
+}
+
 resource "aws_ssm_parameter" "lambda_kms_arn" {
   description = "The role arn for the lambda kms kkey"
   name        = "/services/iotv-api/${var.stage}/LAMBDA_KMS_ARN"

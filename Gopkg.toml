@@ -11,9 +11,5 @@
   version = "1.15.87"
 
 [[constraint]]
-  name = "github.com/jackc/pgx"
-  version = "v3.2.0"
-
-[[constraint]]
   branch = "master"
   name = "golang.org/x/crypto"

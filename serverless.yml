@@ -23,7 +23,9 @@ functions:
     awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
     handler: bin/graphql
     environment:
+      EMAIL_AUTHENTICATIONS_TABLE: "${ssm:/services/iotv-api/${opt:stage}/EMAIL_AUTHENTICATIONS_TABLE}"
       JWT_SECRET: "${ssm:/services/iotv-api/${opt:stage}/JWT_SECRET~true}"
+      USERS_TABLE: "${ssm:/services/iotv-api/${opt:stage}/USERS_TABLE}"
     events:
       - http:
           path: /graphql

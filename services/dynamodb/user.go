@@ -51,6 +51,9 @@ func (c *config) CreateUserWithEmailAndPassword(ctx context.Context, emailAddres
 						"HashedPassword": {
 							S: aws.String(hashedPassword),
 						},
+						"UserId": {
+							S: aws.String(newUserId),
+						},
 					},
 				},
 			},

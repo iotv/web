@@ -26,6 +26,37 @@ resource "aws_iam_policy" "allow_s3_kms_key_use" {
 ###################
 ### Lambda role ###
 ###################
+## Allow role to use DynamoDB tables ##
+data "aws_iam_policy_document" "allow_lambda_dynamo_access" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "dynamodb:PutItem",
+      "dynamodb:GetItem",
+      "dynamodb:Scan",
+      "dynamodb:Query",
+      "dynamodb:UpdateItem",
+    ]
+
+    resources = [
+      "${aws_dynamodb_table.email_authentications.arn}",
+      "${aws_dynamodb_table.users.arn}",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "allow_lambda_dynamo_access" {
+  description = "Allow DynamoDB access for ${var.app_name}"
+  name_prefix = "AllowDynamoDBAccess"
+  policy      = "${data.aws_iam_policy_document.allow_lambda_dynamo_access.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamo" {
+  policy_arn = "${aws_iam_policy.allow_lambda_dynamo_access.arn}"
+  role       = "${aws_iam_role.api_lambda.name}"
+}
+
 ## Allow role to use S3 KMS key ##
 resource "aws_iam_role_policy_attachment" "lamba_s3_kms" {
   policy_arn = "${aws_iam_policy.allow_s3_kms_key_use.arn}"

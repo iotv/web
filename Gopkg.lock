@@ -54,8 +54,8 @@
     "private/protocol/restxml",
     "private/protocol/xml/xmlutil",
     "service/dynamodb",
+    "service/dynamodb/dynamodbattribute",
     "service/elastictranscoder",
-    "service/kms",
     "service/s3",
     "service/sts",
   ]
@@ -94,21 +94,6 @@
   revision = "0079757a4d9612f5674f8f9996e2350e1259ff1b"
 
 [[projects]]
-  digest = "1:5544f7badae00bc5b9ec6829857bc08f88fce4d3ef73fb616ee57d49abbf7f48"
-  name = "github.com/jackc/pgx"
-  packages = [
-    ".",
-    "chunkreader",
-    "internal/sanitize",
-    "pgio",
-    "pgproto3",
-    "pgtype",
-  ]
-  pruneopts = ""
-  revision = "89f1e6ac7276b61d885db5e5aed6fcbedd1c7e31"
-  version = "v3.2.0"
-
-[[projects]]
   digest = "1:6f49eae0c1e5dab1dafafee34b207aeb7a42303105960944828c2079b92fc88e"
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
@@ -136,12 +121,20 @@
   version = "v1.0.2"
 
 [[projects]]
-  digest = "1:7365acd48986e205ccb8652cc746f09c8b7876030d53710ea6ef7d0bd0dcd7ca"
-  name = "github.com/pkg/errors"
+  branch = "master"
+  digest = "1:c9a564dcf640c2d7a5d50b84416e3e8200c77a4abbace41d4fc06b7a771db9c5"
+  name = "github.com/shurcooL/httpfs"
+  packages = ["vfsutil"]
+  pruneopts = ""
+  revision = "809beceb23714880abc4a382a00c05f89d13b1cc"
+
+[[projects]]
+  branch = "master"
+  digest = "1:65bb0e4ab0d621dd72b060b67bcccf9a58444adc6dcc239f047b9d6790b448b9"
+  name = "github.com/shurcooL/vfsgen"
   packages = ["."]
   pruneopts = ""
-  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
-  version = "v0.8.0"
+  revision = "a97a25d856cadfe6481325baeb35a70d6723ca0c"
 
 [[projects]]
   branch = "master"
@@ -179,13 +172,13 @@
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/dynamodb",
+    "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute",
     "github.com/aws/aws-sdk-go/service/elastictranscoder",
-    "github.com/aws/aws-sdk-go/service/kms",
     "github.com/aws/aws-sdk-go/service/s3",
     "github.com/dgrijalva/jwt-go",
     "github.com/graph-gophers/graphql-go",
-    "github.com/jackc/pgx",
     "github.com/lucsky/cuid",
+    "github.com/shurcooL/vfsgen",
     "golang.org/x/crypto/argon2",
   ]
   solver-name = "gps-cdcl"
