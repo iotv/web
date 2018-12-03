@@ -35,7 +35,7 @@ func (u *User) RealName() *string {
 }
 
 func (r *RootResolver) GetUserById(ctx context.Context, id string) (*User, error) {
-	if user, err := r.DynamoService.GetUserById(ctx, id); err != nil {
+	if user, err := r.DynamoDBService.GetUserById(ctx, id); err != nil {
 		return nil, err
 	} else {
 		return &User{

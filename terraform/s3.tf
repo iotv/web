@@ -80,6 +80,11 @@ resource "aws_s3_bucket" "source_videos" {
     target_prefix = "log/video-encoder-uploaded-videos/"
   }
 
+  lifecycle_rule {
+    abort_incomplete_multipart_upload_days = 3
+    enabled                                = true
+  }
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {

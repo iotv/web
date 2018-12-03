@@ -9,8 +9,9 @@ import (
 	"gitlab.com/iotv/services/iotv-api/resolvers"
 	"gitlab.com/iotv/services/iotv-api/schema"
 	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
-	"io/ioutil"
+	"gitlab.com/iotv/services/iotv-api/services/s3"
 	"gitlab.com/iotv/services/iotv-api/utilities"
+	"io/ioutil"
 )
 
 type handler struct {
@@ -42,9 +43,11 @@ func main() {
 	// FIXME: handle all the errors
 	schemaFile, _ := schema.Assets.Open("/schema.graphql")
 	schemaBuf, _ := ioutil.ReadAll(schemaFile)
-	dynamoDB, _ := dynamodb.NewService()
+	dynamoDBSvc, _ := dynamodb.NewService()
+	s3Svc, _ := s3.NewService()
 	root, _ := graphql.ParseSchema(string(schemaBuf), &resolvers.RootResolver{
-		DynamoService: dynamoDB,
+		DynamoDBService: dynamoDBSvc,
+		S3Service:       s3Svc,
 	})
 	h := handler{
 		schema: root,

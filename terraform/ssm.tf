@@ -39,6 +39,22 @@ resource "aws_ssm_parameter" "email_authentications_table" {
   value = "${aws_dynamodb_table.email_authentications.name}"
 }
 
+resource "aws_ssm_parameter" "source_videos_table" {
+  description = "The source videos DynamoDB table"
+  name        = "/services/iotv-api/${var.stage}/SOURCE_VIDEOS_TABLE"
+
+  tags {
+    Application = "iotv-api"
+    Terraform   = "true"
+    Name        = "source videos DynamoDB table"
+    Repo        = "https://gitlab.com/iotv/services/iotv-api"
+    Stage       = "${var.stage}"
+  }
+
+  type  = "String"
+  value = "${aws_dynamodb_table.source_videos.name}"
+}
+
 resource "aws_ssm_parameter" "users_table" {
   description = "The users DynamoDB table"
   name        = "/services/iotv-api/${var.stage}/USERS_TABLE"
