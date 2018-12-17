@@ -8,6 +8,7 @@ type Query {
 }
 
 type Mutation {
+    createSourceVideo: SourceVideo!
     createUserWithPassword(
         email: String!
         password: String!
@@ -19,12 +20,21 @@ type Mutation {
     ): UserAuthContainer!
 }
 
+type SourceVideo {
+    id: ID!
+    isFullyUploaded: Boolean!
+    ownerUser: User
+    uploadUrl: String
+    downloadUrl: String
+}
+
 type User {
     id: ID!
     email: String!
     isEmailConfirmed: Boolean!
     realName: String
     userName: String!
+    sourceVideos: [SourceVideo!]!
 }
 
 type UserAuthContainer {

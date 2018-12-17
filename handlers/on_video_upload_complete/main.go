@@ -5,65 +5,59 @@ import (
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/lucsky/cuid"
+	"github.com/aws/aws-sdk-go/aws"
+	iotvEvents "gitlab.com/iotv/services/iotv-api/events"
 	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
-	"gitlab.com/iotv/services/iotv-api/services/elastictranscoder"
 	"gitlab.com/iotv/services/iotv-api/services/logger"
+	"gitlab.com/iotv/services/iotv-api/services/sfn"
 	"path"
-	"sync"
+	"os"
 )
-
-type Response struct {
-	Message string `json:"message"`
-}
 
 type handler struct {
 	DynamoDBService dynamodb.Service
-	ETService       elastictranscoder.Service
+	SfnService      sfn.Service
 	Logger          logger.Logger
 }
 
-func (h *handler) OnVideoUploadComplete(ctx context.Context, e events.SNSEvent) (Response, error) {
-	var s3Sync sync.WaitGroup
+func (h *handler) OnVideoUploadComplete(ctx context.Context, e events.SNSEvent) error {
 	for _, record := range e.Records {
-		s3Sync.Add(1)
-		go func(record events.SNSEventRecord) {
-			// Ensure we count down after we close
-			defer s3Sync.Done()
+		var s3Event events.S3Event
+		if err := json.Unmarshal([]byte(record.SNS.Message), &s3Event); err == nil {
+			for _, s3Record := range s3Event.Records {
 
-			var s3Event events.S3Event
-			if err := json.Unmarshal([]byte(record.SNS.Message), &s3Event); err == nil {
-				for _, s3Record := range s3Event.Records {
-					s3Sync.Add(1)
-					go func(s3Record events.S3EventRecord) {
-						defer s3Sync.Done()
+				_, videoId := path.Split(s3Record.S3.Object.Key)
+				if err := h.DynamoDBService.UpdateSourceVideoIsFullyUploaded(ctx, videoId, true); err != nil {
+					// FIXME log error
+					return err
+				}
 
-						_, videoId := path.Split(s3Record.S3.Object.Key)
-						if err := h.DynamoDBService.UpdateSourceVideoIsFullyUploaded(ctx, videoId, true); err != nil {
-							// FIXME handle error
-						}
-						// FIXME: capture response
-						if _, err := h.ETService.CreateJob(ctx, s3Record.S3.Object.Key, cuid.New()); err != nil {
-							// FIXME handle error
-						} else {
-							// FIXME handle response
-						}
-					}(s3Record)
+				request := iotvEvents.StartVideoEncodingRequest{
+					S3Bucket:  s3Record.S3.Bucket.Name,
+					ObjectKey: s3Record.S3.Object.Key,
+					VideoId:   videoId,
+				}
+				encodedRequest, _ := json.Marshal(request)
+
+				if _, err := h.SfnService.StartExecution(ctx, aws.String(string(encodedRequest))); err != nil {
+					// FIXME log error
+					return err
+				} else {
+					// FIXME handle response
 				}
 			}
-		}(record)
+		}
 	}
-	s3Sync.Wait()
-	return Response{Message: "Complete"}, nil
+	return nil
 }
 
 func main() {
 	log := logger.NewLogger()
-	dynamodb, _ := dynamodb.NewService()
-	et, _ := elastictranscoder.NewService()
+	dynamoDb, _ := dynamodb.NewService()
+	sfnSvc, _ := sfn.NewService(os.Getenv("ENCODE_VIDEO_SFN_ARN"))
 	h := handler{
-		DynamoDBService: dynamodb,
-		ETService:       et,
+		DynamoDBService: dynamoDb,
+		SfnService:      sfnSvc,
 		Logger:          log,
 	}
 	lambda.Start(h.OnVideoUploadComplete)

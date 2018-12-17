@@ -56,7 +56,9 @@
     "service/dynamodb",
     "service/dynamodb/dynamodbattribute",
     "service/elastictranscoder",
+    "service/mediaconvert",
     "service/s3",
+    "service/sfn",
     "service/sts",
   ]
   pruneopts = ""
@@ -70,6 +72,14 @@
   pruneopts = ""
   revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
   version = "v3.2.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:007893a0efc9824bf87c88a2839917ad1e1ca51aeed6f8f3ae07a59defa9e141"
+  name = "github.com/fnproject/fdk-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "225736950b1c233d370a4c97cd4633f2198deec9"
 
 [[projects]]
   branch = "master"
@@ -174,8 +184,11 @@
     "github.com/aws/aws-sdk-go/service/dynamodb",
     "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute",
     "github.com/aws/aws-sdk-go/service/elastictranscoder",
+    "github.com/aws/aws-sdk-go/service/mediaconvert",
     "github.com/aws/aws-sdk-go/service/s3",
+    "github.com/aws/aws-sdk-go/service/sfn",
     "github.com/dgrijalva/jwt-go",
+    "github.com/fnproject/fdk-go",
     "github.com/graph-gophers/graphql-go",
     "github.com/lucsky/cuid",
     "github.com/shurcooL/vfsgen",

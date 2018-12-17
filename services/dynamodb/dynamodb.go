@@ -13,6 +13,7 @@ type Service interface {
 	CreateVideoSegment(ctx context.Context, videoSegmentId string, originatingSourceVideoId *string) (*VideoSegment, error)
 	GetEmailAuthenticationByEmail(ctx context.Context, emailAddress string) (*EmailAuthentication, error)
 	GetSourceVideoById(ctx context.Context, id string) (*SourceVideo, error)
+	GetSourceVideosByOwnerUserId(ctx context.Context, ownerId string) ([]*SourceVideo, error)
 	GetUserById(ctx context.Context, id string) (*User, error)
 	UpdateSourceVideoIsFullyUploaded(ctx context.Context, sourceVideoId string, isFullyUploaded bool) error
 }

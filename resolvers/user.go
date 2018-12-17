@@ -34,6 +34,10 @@ func (u *User) RealName() *string {
 	return u.realName
 }
 
+func (u *User) SourceVideos(ctx context.Context) ([]*SourceVideo, error) {
+	return u.r.GetSourceVideosByOwnerUserId(ctx, u.id)
+}
+
 func (r *RootResolver) GetUserById(ctx context.Context, id string) (*User, error) {
 	if user, err := r.DynamoDBService.GetUserById(ctx, id); err != nil {
 		return nil, err

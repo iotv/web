@@ -41,7 +41,12 @@ data "aws_iam_policy_document" "allow_lambda_dynamo_access" {
 
     resources = [
       "${aws_dynamodb_table.email_authentications.arn}",
+      "${aws_dynamodb_table.email_authentications.arn}/index/*",
+      "${aws_dynamodb_table.source_videos.arn}",
+      "${aws_dynamodb_table.source_videos.arn}/index/*",
       "${aws_dynamodb_table.users.arn}",
+      "${aws_dynamodb_table.users.arn}/index/*",
+
     ]
   }
 }

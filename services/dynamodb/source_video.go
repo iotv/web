@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/lucsky/cuid"
+	"fmt"
 )
 
 type SourceVideo struct {
@@ -59,6 +60,31 @@ func (c *config) GetSourceVideoById(ctx context.Context, id string) (*SourceVide
 			return &sourceVideo, nil
 		}
 	}
+}
+
+func (c *config) GetSourceVideosByOwnerUserId(ctx context.Context, ownerUserId string) ([]*SourceVideo, error) {
+	var result []*SourceVideo
+	if err := c.dynamoDB.QueryPagesWithContext(ctx, &dynamodb.QueryInput{
+		TableName:              aws.String(c.sourceVideosTable),
+		IndexName:              aws.String("OwnerUserIdIndex"),
+		KeyConditionExpression: aws.String("OwnerUserId = :ownerUserId"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":ownerUserId": {
+				S: aws.String(ownerUserId),
+			},
+		},
+	}, func(output *dynamodb.QueryOutput, hasNextPage bool) bool {
+		var page []*SourceVideo
+		err := dynamodbattribute.UnmarshalListOfMaps(output.Items, &page)
+		fmt.Println(err)
+		fmt.Println(output)
+		result = append(result, page...)
+		return hasNextPage
+	}); err != nil {
+		// FIXME: make this error friendlier
+		return nil, err
+	}
+	return result, nil
 }
 
 func (c *config) UpdateSourceVideoIsFullyUploaded(ctx context.Context, id string, value bool) error {

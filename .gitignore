@@ -12,3 +12,5 @@ vendor
 
 # Jetbrains
 .idea/**
+
+node_modules/**

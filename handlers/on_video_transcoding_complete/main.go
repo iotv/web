@@ -22,7 +22,6 @@ type Response struct {
 
 type handler struct {
 	DynamoDBService dynamodb.Service
-	ETService       elastictranscoder.Service
 	Logger          logger.Logger
 	S3Service       s3.Service
 }
@@ -65,11 +64,9 @@ func (h *handler) OnVideoTranscodingComplete(ctx context.Context, e events.SNSEv
 func main() {
 	log := logger.NewLogger()
 	dynamodb, _ := dynamodb.NewService()
-	et, _ := elastictranscoder.NewService()
 	s3Svc, _ := s3.NewService()
 	h := handler{
 		DynamoDBService: dynamodb,
-		ETService:       et,
 		Logger:          log,
 		S3Service:       s3Svc,
 	}

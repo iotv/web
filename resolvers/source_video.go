@@ -3,6 +3,7 @@ package resolvers
 import (
 	"context"
 	"github.com/graph-gophers/graphql-go"
+	"gitlab.com/iotv/services/iotv-api/utilities"
 )
 
 type SourceVideo struct {
@@ -49,16 +50,38 @@ func (sv *SourceVideo) UploadUrl(ctx context.Context) (*string, error) {
 	}
 }
 
-func (r *RootResolver) CreateSourceVideo(ctx context.Context, ownerUserId *string) (*SourceVideo, error) {
-	if sourceVideo, err := r.DynamoDBService.CreateSourceVideo(ctx, ownerUserId); err != nil {
+func (r *RootResolver) CreateSourceVideo(ctx context.Context) (*SourceVideo, error) {
+	if userId, err := utilities.GetUserIdFromContextJwt(ctx); err != nil {
+		// FIXME: make error friendly
 		return nil, err
 	} else {
-		return &SourceVideo{
-			r:               r,
-			id:              sourceVideo.SourceVideoId,
-			isFullyUploaded: sourceVideo.IsFullyUploaded,
-			ownerUserId:     sourceVideo.OwnerUserId,
-		}, nil
+		if sourceVideo, err := r.DynamoDBService.CreateSourceVideo(ctx, &userId); err != nil {
+			return nil, err
+		} else {
+			return &SourceVideo{
+				r:               r,
+				id:              sourceVideo.SourceVideoId,
+				isFullyUploaded: sourceVideo.IsFullyUploaded,
+				ownerUserId:     sourceVideo.OwnerUserId,
+			}, nil
+		}
+	}
+}
+
+func (r *RootResolver) GetSourceVideosByOwnerUserId(ctx context.Context, ownerUserId string) ([]*SourceVideo, error) {
+	if sourceVideos, err := r.DynamoDBService.GetSourceVideosByOwnerUserId(ctx, ownerUserId); err != nil {
+		return nil, err
+	} else {
+		ret := make([]*SourceVideo, len(sourceVideos))
+		for i, sourceVideo := range sourceVideos {
+			ret[i] = &SourceVideo{
+				r:               r,
+				id:              sourceVideo.SourceVideoId,
+				isFullyUploaded: sourceVideo.IsFullyUploaded,
+				ownerUserId:     sourceVideo.OwnerUserId,
+			}
+		}
+		return ret, nil
 	}
 }
 

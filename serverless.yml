@@ -14,9 +14,20 @@ provider:
 
 package:
   individually: true
-  exclude:
-  - ./**
 
+
+layers:
+  ffmpeg:
+    path: bin/layers/ffmpeg
+    package:
+      include:
+        - bin/layers/ffmpeg/ffmpeg
+
+  ffprobe:
+    path: bin/layers/ffprobe
+    package:
+      include:
+        - bin/layers/ffprobe/ffprobe
 
 functions:
   graphql:
@@ -25,6 +36,7 @@ functions:
     environment:
       EMAIL_AUTHENTICATIONS_TABLE: "${ssm:/services/iotv-api/${opt:stage}/EMAIL_AUTHENTICATIONS_TABLE}"
       JWT_SECRET: "${ssm:/services/iotv-api/${opt:stage}/JWT_SECRET~true}"
+      SOURCE_VIDEOS_TABLE: "${ssm:/services/iotv-api/${opt:stage}/SOURCE_VIDEOS_TABLE}"
       USERS_TABLE: "${ssm:/services/iotv-api/${opt:stage}/USERS_TABLE}"
     events:
       - http:
@@ -32,8 +44,10 @@ functions:
           method: post
           cors: true
     package:
+      exclude:
+        - ./**
       include:
-      - bin/graphql
+        - bin/graphql
 
   onVideoTranscodingComplete:
     awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
@@ -42,8 +56,10 @@ functions:
       - sns:
           arn: "${ssm:/services/iotv-api/${opt:stage}/VIDEO_ENCODER_COMPLETE_ARN}"
     package:
+      exclude:
+        - ./**
       include:
-      - bin/on_video_transcoding_complete
+        - bin/on_video_transcoding_complete
 
   #  onVideoTranscodingError:
   #    handler: bin/on_video_transcoding_error
@@ -79,5 +95,7 @@ functions:
       - sns:
           arn: "${ssm:/services/iotv-api/${opt:stage}/SOURCE_VIDEO_UPLOADED_ARN}"
     package:
+      exclude:
+        - ./**
       include:
-      - bin/on_video_upload_complete
+        - bin/on_video_upload_complete

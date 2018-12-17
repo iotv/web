@@ -7,6 +7,13 @@ KMS_KEY_ARN="arn:aws:kms:us-east-1:291585690921:key/f22b80ef-e7e5-4f60-b430-d54c
 S3_BUCKET="iotv-tf20180213040614675300000003"
 
 
+mkdir -p bin/layers/ffmpeg
+mkdir -p bin/layers/ffprobe
+curl -L https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz -o bin/ffmpeg-git-amd64-static.tar.xz
+tar xf bin/ffmpeg-git-amd64-static.tar.xz -C bin/
+mv bin/ffmpeg-git-*-amd64-static/ffmpeg bin/layers/ffmpeg/ffmpeg
+mv bin/ffmpeg-git-*-amd64-static/ffprobe bin/layers/ffprobe/ffprobe
+
 dep ensure
 
 go build \
