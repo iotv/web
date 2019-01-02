@@ -1,9 +1,12 @@
 package s3
 
 import (
+	"context"
 	"errors"
 	"github.com/aws/aws-sdk-go/aws"
 	awsS3 "github.com/aws/aws-sdk-go/service/s3"
+	"io"
+	"strconv"
 	"time"
 )
 
@@ -34,5 +37,17 @@ func (c *config) GetPresignedSourceVideoUploadUrl(sourceVideoId string, ownerUse
 		return nil, CannotSignURLError
 	} else {
 		return &url, nil
+	}
+}
+
+func (c *config) GetSourceVideoChunk(ctx context.Context, sourceVideoId string, ownerUserId *string) (io.Reader, error) {
+	if output, err := c.s3.GetObjectWithContext(ctx, &awsS3.GetObjectInput{
+		Bucket: aws.String(c.sourceVideoBucket),
+		Range:  aws.String("bytes=" + strconv.Itoa(0) + "-" + strconv.Itoa(1024*1024)),
+		Key:    aws.String("users/" + *ownerUserId + "/source-videos/" + sourceVideoId),
+	}); err != nil {
+		return nil, err
+	} else {
+		return output.Body, err
 	}
 }

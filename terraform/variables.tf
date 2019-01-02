@@ -27,3 +27,9 @@ variable "stack_name" {
   type        = "string"
   default     = "terraform-iotv-api"
 }
+
+variable "ffmpeg_version" {
+  description = "The version of ffmpeg to download"
+  type        = "string"
+  default     = "4.0.3"
+}

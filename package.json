@@ -1,6 +1,10 @@
 {
+  "version": "0.0.1",
+  "license": "UNLICENSED",
   "devDependencies": {
     "serverless": "^1.35.0",
+    "serverless-pseudo-parameters": "^2.4.0",
+    "serverless-step-functions": "^1.9.0",
     "sls": "^0.1.0"
   }
 }

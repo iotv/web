@@ -4,6 +4,9 @@ custom:
   stage: ${opt:stage}
 environment:
 
+plugins:
+  - serverless-step-functions
+  - serverless-pseudo-parameters
 
 provider:
   name: aws
@@ -30,6 +33,32 @@ layers:
         - bin/layers/ffprobe/ffprobe
 
 functions:
+  checkSourceVideo:
+    awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
+    environment:
+      SOURCE_VIDEOS_BUCKET: "${ssm:/services/iotv-api/${opt:stage}/SOURCE_VIDEOS_BUCKET}"
+    handler: bin/check_source_video
+    layers:
+      - {Ref: FfprobeLambdaLayer}
+    package:
+      exclude:
+        - ./**
+      include:
+        - bin/check_source_video
+
+  encodeSourceVideo:
+    awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
+    environment:
+      SOURCE_VIDEOS_BUCKET: "${ssm:/services/iotv-api/${opt:stage}/SOURCE_VIDEOS_BUCKET}"
+    handler: bin/encode_source_video
+    layers:
+    - {Ref: FfprobeLambdaLayer}
+    package:
+      exclude:
+      - ./**
+      include:
+      - bin/encode_source_video
+
   graphql:
     awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
     handler: bin/graphql
@@ -99,3 +128,18 @@ functions:
         - ./**
       include:
         - bin/on_video_upload_complete
+
+stepFunctions:
+  stateMachines:
+    encodeSourceVideo:
+      definition:
+        StartAt: checkSourceVideo
+        States:
+          checkSourceVideo:
+            Type: Task
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-checkSourceVideo"
+            Next: encodeSourceVideo
+          encodeSourceVideo:
+            Type: Task
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-encodeSourceVideo"
+            End: true

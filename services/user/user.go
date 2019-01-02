@@ -1,11 +1,14 @@
-package dynamodb
+package user
 
 import (
 	"context"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	awsDynamoDB "github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/lucsky/cuid"
+	"os"
 )
 
 type User struct {
@@ -14,6 +17,18 @@ type User struct {
 	UserName         string
 	RealName         *string
 	IsEmailConfirmed bool
+}
+
+type Service interface {
+	CreateUserWithEmailAndPassword(ctx context.Context, emailAddress, userName, hashedPassword string) (*User, error)
+	GetEmailAuthenticationByEmail(ctx context.Context, emailAddress string) (*EmailAuthentication, error)
+	GetUserById(ctx context.Context, id string) (*User, error)
+}
+
+type config struct {
+	emailAuthenticationsTable string
+	usersTable                string
+	dynamoDB                  *awsDynamoDB.DynamoDB
 }
 
 func (c *config) CreateUserWithEmailAndPassword(ctx context.Context, emailAddress, userName, hashedPassword string) (*User, error) {
@@ -90,4 +105,15 @@ func (c *config) GetUserById(ctx context.Context, id string) (*User, error) {
 			return &user, nil
 		}
 	}
+}
+
+func NewService() (Service, error) {
+	// FIXME: handle error
+	sess, _ := session.NewSession()
+
+	return &config{
+		emailAuthenticationsTable: os.Getenv("EMAIL_AUTHENTICATIONS_TABLE"),
+		usersTable:                os.Getenv("USERS_TABLE"),
+		dynamoDB:                  awsDynamoDB.New(sess),
+	}, nil
 }

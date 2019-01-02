@@ -39,7 +39,7 @@ func (u *User) SourceVideos(ctx context.Context) ([]*SourceVideo, error) {
 }
 
 func (r *RootResolver) GetUserById(ctx context.Context, id string) (*User, error) {
-	if user, err := r.DynamoDBService.GetUserById(ctx, id); err != nil {
+	if user, err := r.UserService.GetUserById(ctx, id); err != nil {
 		return nil, err
 	} else {
 		return &User{

@@ -10,6 +10,7 @@ import (
 	"gitlab.com/iotv/services/iotv-api/schema"
 	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
 	"gitlab.com/iotv/services/iotv-api/services/s3"
+	"gitlab.com/iotv/services/iotv-api/services/user"
 	"gitlab.com/iotv/services/iotv-api/utilities"
 	"io/ioutil"
 )
@@ -44,8 +45,10 @@ func main() {
 	schemaFile, _ := schema.Assets.Open("/schema.graphql")
 	schemaBuf, _ := ioutil.ReadAll(schemaFile)
 	dynamoDBSvc, _ := dynamodb.NewService()
+	userSvc, _ := user.NewService()
 	s3Svc, _ := s3.NewService()
 	root, _ := graphql.ParseSchema(string(schemaBuf), &resolvers.RootResolver{
+		UserService:     userSvc,
 		DynamoDBService: dynamoDBSvc,
 		S3Service:       s3Svc,
 	})

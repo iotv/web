@@ -23,6 +23,29 @@ resource "aws_iam_policy" "allow_s3_kms_key_use" {
   policy      = "${data.aws_iam_policy_document.allow_s3_kms_key_use.json}"
 }
 
+## Allow roles to read from source video bucket ##
+data "aws_iam_policy_document" "allow_read_from_source_video_s3_bucket" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:ListBucket",
+      "s3:Get*",
+    ]
+
+    resources = [
+      "${aws_s3_bucket.source_videos.arn}",
+      "${aws_s3_bucket.source_videos.arn}/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "allow_read_from_source_video_s3_bucket" {
+  description = "Allow S3 Read from source videos S3 Bucket for ${var.app_name}"
+  name_prefix = "AllowS3Read"
+  policy      = "${data.aws_iam_policy_document.allow_read_from_source_video_s3_bucket.json}"
+}
+
 ###################
 ### Lambda role ###
 ###################
@@ -120,6 +143,12 @@ resource "aws_iam_policy" "allow_jwt_kms_key_use" {
 resource "aws_iam_role_policy_attachment" "lambda_jwt_kms" {
   policy_arn = "${aws_iam_policy.allow_jwt_kms_key_use.arn}"
   role       = "${aws_iam_role.api_lambda.name}"
+}
+
+## Allow role to read from source video bucket ##
+resource "aws_iam_role_policy_attachment" "lambda_source_video_s3_bucket" {
+  policy_arn = "${aws_iam_policy.allow_read_from_source_video_s3_bucket.arn}"
+  role       = "${aws_iam_role.api_lambda.id}"
 }
 
 ## Allow lambda to write to cloudwatch logs
@@ -236,29 +265,7 @@ resource "aws_iam_role_policy_attachment" "et_sns_status" {
 }
 
 ## Allow role to read from source video bucket ##
-data "aws_iam_policy_document" "allow_read_from_source_video_s3_bucket" {
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "s3:ListBucket",
-      "s3:Get*",
-    ]
-
-    resources = [
-      "${aws_s3_bucket.source_videos.arn}",
-      "${aws_s3_bucket.source_videos.arn}/*",
-    ]
-  }
-}
-
-resource "aws_iam_policy" "allow_read_from_source_video_s3_bucket" {
-  description = "Allow S3 Read from source videos S3 Bucket for ${var.app_name}"
-  name_prefix = "AllowS3Read"
-  policy      = "${data.aws_iam_policy_document.allow_read_from_source_video_s3_bucket.json}"
-}
-
-resource "aws_iam_role_policy_attachment" "allow_read_from_source_video_s3_bucket" {
+resource "aws_iam_role_policy_attachment" "elastic_transcoder_source_video_s3_bucket" {
   policy_arn = "${aws_iam_policy.allow_read_from_source_video_s3_bucket.arn}"
   role       = "${aws_iam_role.elastic_transcoder.id}"
 }

@@ -5,11 +5,13 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	awsS3 "github.com/aws/aws-sdk-go/service/s3"
 	"os"
+	"io"
 )
 
 type Service interface {
 	GetPresignedSourceVideoDownloadUrl(sourceVideoId string, ownerUserId *string) (*string, error)
 	GetPresignedSourceVideoUploadUrl(sourceVideoId string, ownerUserId *string) (*string, error)
+	GetSourceVideoChunk(ctx context.Context, sourceVideoId string, ownerUserId *string) (io.Reader, error)
 	ListObjectPagesFromPrefix(ctx context.Context, prefix string, fn func(*awsS3.ListObjectsV2Output, bool) bool) error
 }
 
@@ -27,7 +29,7 @@ func NewService() (Service, error) {
 	sess, _ := session.NewSession()
 
 	return &config{
-		sourceVideoBucket: os.Getenv("SOURCE_VIDEO_BUCKET"),
+		sourceVideoBucket: os.Getenv("SOURCE_VIDEOS_BUCKET"),
 		s3:                awsS3.New(sess),
 	}, nil
 }

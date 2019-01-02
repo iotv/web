@@ -9,3 +9,18 @@ type StartVideoEncodingRequest struct {
 type StartVideoEncodingResponse struct {
 	MediaConvertJobId string `json:"mediaConvertJobId"`
 }
+
+type CheckSourceVideoRequest struct {
+	SourceVideoId string
+	OwnerUserId   *string
+}
+
+type CheckSourceVideoResponse struct {
+	SourceVideoId string
+	OwnerUserId   *string
+	Width         uint
+	Height        uint
+	AspectRatio   string
+}
+
+type EncodeSourceVideoRequest CheckSourceVideoResponse
