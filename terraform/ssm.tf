@@ -206,19 +206,3 @@ resource "aws_ssm_parameter" "video_encoder_warning_arn" {
   value = "${aws_sns_topic.video_encoder_warning.arn}"
 }
 
-resource "aws_ssm_parameter" "widescreenFHD_preset_id" {
-  description = "The PresetId for widescreen FHD"
-  name        = "/services/iotv-api/${var.stage}/WIDESCREEN_FHD_PRESET_ID"
-  overwrite   = true
-
-  tags {
-    Application = "iotv-api"
-    Terraform   = "true"
-    Name        = "Widescreen FHD PresetId"
-    Repo        = "https://gitlab.com/iotv/services/iotv-api"
-    Stage       = "${var.stage}"
-  }
-
-  type  = "String"
-  value = "${aws_elastictranscoder_preset.widescreenFHD.id}"
-}

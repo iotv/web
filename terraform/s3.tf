@@ -102,8 +102,45 @@ resource "aws_s3_bucket" "source_videos" {
   }
 }
 
-# Transcoded Videos
-resource "aws_s3_bucket" "transcoded_videos" {}
+# Encoded Videos
+resource "aws_s3_bucket" "encoded_videos" {
+  bucket_prefix = "encoded-videos"
+  acl           = "private"
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT", "POST", "GET"]
+    allowed_origins = ["*"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
+
+  logging {
+    target_bucket = "${aws_s3_bucket.api_logs.id}"
+    target_prefix = "log/video-encoder-uploaded-videos/"
+  }
+
+  lifecycle_rule {
+    abort_incomplete_multipart_upload_days = 3
+    enabled                                = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = "${aws_kms_key.s3.arn}"
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
+
+  tags {
+    Application = "${var.app_name}"
+    Environment = "${var.stage}"
+    Name        = "${var.org_name} ${var.app_name} Encoded Videos Bucket"
+    Stack       = "${var.org_name}-${var.stack_name}"
+  }
+}
 
 # Thumbnails
 resource "aws_s3_bucket" "video_thumbnails" {}

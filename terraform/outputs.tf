@@ -17,7 +17,3 @@ output "video_encoder_progressing_arn" {
 output "video_encoder_warning_arn" {
   value = "${aws_sns_topic.video_encoder_warning.arn}"
 }
-
-output "widesceenFHDpresetId" {
-  value = "${aws_elastictranscoder_preset.widescreenFHD.id}"
-}

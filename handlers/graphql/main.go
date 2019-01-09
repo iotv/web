@@ -35,6 +35,12 @@ func (h *handler) GraphQL(ctx context.Context, e events.APIGatewayProxyRequest) 
 	// FIXME: handle error
 	respBody, _ := json.Marshal(response)
 	return events.APIGatewayProxyResponse{
+		Headers: map[string]string{
+			"Access-Control-Allow-Origin": "*",
+			"Access-Control-Allow-Credentials": "true",
+			"Access-Control-Allow-Methods": "OPTIONS, POST",
+			"Access-Control-Allow-Headers": "Authorization, X-Correlation-ID, X-Request-ID",
+		},
 		Body:       string(respBody),
 		StatusCode: 200,
 	}, nil

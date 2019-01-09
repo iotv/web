@@ -5,7 +5,7 @@ import (
 	"errors"
 	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
 	"gitlab.com/iotv/services/iotv-api/services/s3"
-	"gitlab.com/iotv/services/iotv-api/services/user"
+	userSvc "gitlab.com/iotv/services/iotv-api/services/user"
 	"gitlab.com/iotv/services/iotv-api/utilities"
 )
 
@@ -14,7 +14,7 @@ var (
 )
 
 type RootResolver struct {
-	UserService     user.Service
+	UserService     userSvc.Service
 	DynamoDBService dynamodb.Service
 	S3Service       s3.Service
 }
@@ -34,18 +34,18 @@ func (r *RootResolver) CreateUserWithPassword(ctx context.Context, args struct{ 
 		return nil, err
 	}
 
-	if user, err := r.UserService.CreateUserWithEmailAndPassword(ctx, args.Email, args.UserName, *hashedPassword); err != nil {
+	if newUser, err := r.UserService.CreateUserWithEmailAndPassword(ctx, args.Email, args.UserName, *hashedPassword); err != nil {
 		// FIXME Make sure error is friendly
 		return nil, err
 	} else {
-		if token, err := utilities.SignJWT(user.UserId); err != nil {
+		if token, err := utilities.SignJWT(newUser.UserId); err != nil {
 			// FIXME: make error friendly
 			return nil, err
 		} else {
 			return &UserAuthContainer{
 				r:      r,
 				token:  token,
-				userId: user.UserId,
+				userId: newUser.UserId,
 			}, nil
 		}
 	}
@@ -59,7 +59,7 @@ func (r *RootResolver) LoginWithEmailAndPassword(ctx context.Context, args struc
 	auth, err := r.UserService.GetEmailAuthenticationByEmail(ctx, args.Email)
 	if err != nil {
 		// Create a fake auth which will fail validation, so that the rest of this function executes in the same amount of time as an incorrect password
-		auth = &user.EmailAuthentication{
+		auth = &userSvc.EmailAuthentication{
 			HashedPassword: utilities.InvalidEncodedPassword,
 		}
 		// Set our safety to prevent accidentally succeeding even though it shouldn't ever.

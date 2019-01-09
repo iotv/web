@@ -69,7 +69,6 @@ data "aws_iam_policy_document" "allow_lambda_dynamo_access" {
       "${aws_dynamodb_table.source_videos.arn}/index/*",
       "${aws_dynamodb_table.users.arn}",
       "${aws_dynamodb_table.users.arn}/index/*",
-
     ]
   }
 }
@@ -179,33 +178,6 @@ resource "aws_iam_role_policy_attachment" "lambda_cloudwatch_logs" {
   role       = "${aws_iam_role.api_lambda.name}"
 }
 
-## Allow lambda to create job in elastic transcoder
-data "aws_iam_policy_document" "allow_et_create_job" {
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "elastictranscoder:CreateJob",
-    ]
-
-    resources = [
-      "arn:aws:elastictranscoder:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:preset/*",
-      "${aws_elastictranscoder_pipeline.video_encoder.arn}",
-    ]
-  }
-}
-
-resource "aws_iam_policy" "allow_et_create_job" {
-  description = "Allow creating jobs on elastic transcoder for ${var.app_name}"
-  name_prefix = "AllowCreateETJob"
-  policy      = "${data.aws_iam_policy_document.allow_et_create_job.json}"
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_et" {
-  policy_arn = "${aws_iam_policy.allow_et_create_job.arn}"
-  role       = "${aws_iam_role.api_lambda.name}"
-}
-
 ## Allow lambda to assume the role ##
 data "aws_iam_policy_document" "api_lambda_assume_role" {
   statement {
@@ -232,11 +204,11 @@ resource "aws_iam_role" "api_lambda" {
   name_prefix        = "${var.app_name}-lambda"
 }
 
-###############################
-### Elastic transcoder role ###
-###############################
+##########################
+### Video encoder role ###
+##########################
 ## Allow role to publish to SNS status topics ##
-data "aws_iam_policy_document" "allow_publish_to_elastic_transcoder_sns_topics" {
+data "aws_iam_policy_document" "allow_publish_to_video_encoder_sns_topics" {
   statement {
     effect = "Allow"
 
@@ -256,22 +228,22 @@ data "aws_iam_policy_document" "allow_publish_to_elastic_transcoder_sns_topics" 
 resource "aws_iam_policy" "allow_publish_to_elastic_transcoder_sns_topics" {
   description = "Allow SNS Publishing to Elastic Transcoder status topics for ${var.app_name}"
   name_prefix = "AllowSNSPublish"
-  policy      = "${data.aws_iam_policy_document.allow_publish_to_elastic_transcoder_sns_topics.json}"
+  policy      = "${data.aws_iam_policy_document.allow_publish_to_video_encoder_sns_topics.json}"
 }
 
 resource "aws_iam_role_policy_attachment" "et_sns_status" {
   policy_arn = "${aws_iam_policy.allow_publish_to_elastic_transcoder_sns_topics.arn}"
-  role       = "${aws_iam_role.elastic_transcoder.name}"
+  role       = "${aws_iam_role.video_encoder.name}"
 }
 
 ## Allow role to read from source video bucket ##
-resource "aws_iam_role_policy_attachment" "elastic_transcoder_source_video_s3_bucket" {
+resource "aws_iam_role_policy_attachment" "video_encoder_source_video_s3_bucket" {
   policy_arn = "${aws_iam_policy.allow_read_from_source_video_s3_bucket.arn}"
-  role       = "${aws_iam_role.elastic_transcoder.id}"
+  role       = "${aws_iam_role.video_encoder.id}"
 }
 
 ## Allow role to write to transcoded videos bucket and thumbnails bucket ##
-data "aws_iam_policy_document" "allow_write_to_transcoded_videos_and_thumbnails_s3_buckets" {
+data "aws_iam_policy_document" "allow_write_to_encoded_videos_and_thumbnails_s3_buckets" {
   statement {
     effect = "Allow"
 
@@ -281,33 +253,33 @@ data "aws_iam_policy_document" "allow_write_to_transcoded_videos_and_thumbnails_
     ]
 
     resources = [
-      "${aws_s3_bucket.transcoded_videos.arn}",
+      "${aws_s3_bucket.encoded_videos.arn}",
       "${aws_s3_bucket.video_thumbnails.arn}",
-      "${aws_s3_bucket.transcoded_videos.arn}/*",
+      "${aws_s3_bucket.encoded_videos.arn}/*",
       "${aws_s3_bucket.video_thumbnails.arn}/*",
     ]
   }
 }
 
-resource "aws_iam_policy" "allow_write_to_transcoded_videos_and_thumbnails_s3_buckets" {
+resource "aws_iam_policy" "allow_write_to_encoded_videos_and_thumbnails_s3_buckets" {
   description = "Allow S3 Write to Transcoded Videos and Thumbnails S3 Buckets for ${var.app_name}"
   name_prefix = "AllowS3Write"
-  policy      = "${data.aws_iam_policy_document.allow_write_to_transcoded_videos_and_thumbnails_s3_buckets.json}"
+  policy      = "${data.aws_iam_policy_document.allow_write_to_encoded_videos_and_thumbnails_s3_buckets.json}"
 }
 
-resource "aws_iam_role_policy_attachment" "et_transcoded_and_thumbnails" {
-  policy_arn = "${aws_iam_policy.allow_write_to_transcoded_videos_and_thumbnails_s3_buckets.arn}"
-  role       = "${aws_iam_role.elastic_transcoder.name}"
+resource "aws_iam_role_policy_attachment" "video_encoder_transcoded_and_thumbnails" {
+  policy_arn = "${aws_iam_policy.allow_write_to_encoded_videos_and_thumbnails_s3_buckets.arn}"
+  role       = "${aws_iam_role.video_encoder.name}"
 }
 
 ## Allow role to use S3 KMS key ##
-resource "aws_iam_role_policy_attachment" "et_kms" {
+resource "aws_iam_role_policy_attachment" "video_encoder_kms" {
   policy_arn = "${aws_iam_policy.allow_s3_kms_key_use.arn}"
-  role       = "${aws_iam_role.elastic_transcoder.name}"
+  role       = "${aws_iam_role.video_encoder.name}"
 }
 
-## Allow elastic transcoder to assume the role ##
-data "aws_iam_policy_document" "elastic_transcoder_assume_role" {
+## Allow mediaconvert to assume the role ##
+data "aws_iam_policy_document" "video_encoder_assume_role" {
   statement = {
     effect = "Allow"
 
@@ -319,15 +291,16 @@ data "aws_iam_policy_document" "elastic_transcoder_assume_role" {
       type = "Service"
 
       identifiers = [
-        "elastictranscoder.amazonaws.com",
+        "mediaconvert.amazonaws.com",
+        "mediaconvert.us-east-1.amazonaws.com",
       ]
     }
   }
 }
 
 ## The role ##
-resource "aws_iam_role" "elastic_transcoder" {
-  assume_role_policy = "${data.aws_iam_policy_document.elastic_transcoder_assume_role.json}"
-  description        = "The role used by elastic transcoder for ${var.app_name}"
-  name_prefix        = "${var.app_name}-ET"
+resource "aws_iam_role" "video_encoder" {
+  assume_role_policy = "${data.aws_iam_policy_document.video_encoder_assume_role.json}"
+  description        = "The role used by video encoder for ${var.app_name}"
+  name_prefix        = "${var.app_name}-VideoEncoder"
 }
