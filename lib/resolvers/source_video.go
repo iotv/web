@@ -3,7 +3,7 @@ package resolvers
 import (
 	"context"
 	"github.com/graph-gophers/graphql-go"
-	"gitlab.com/iotv/services/iotv-api/utilities"
+	"github.com/iotv/iotv/lib/utilities"
 )
 
 type SourceVideo struct {

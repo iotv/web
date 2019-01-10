@@ -5,7 +5,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	awsDynamoDB "github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/lucsky/cuid"
 	"os"
@@ -28,7 +27,7 @@ type Service interface {
 type config struct {
 	emailAuthenticationsTable string
 	usersTable                string
-	dynamoDB                  *awsDynamoDB.DynamoDB
+	dynamoDB                  *dynamodb.DynamoDB
 }
 
 func (c *config) CreateUserWithEmailAndPassword(ctx context.Context, emailAddress, userName, hashedPassword string) (*User, error) {
@@ -114,6 +113,6 @@ func NewService() (Service, error) {
 	return &config{
 		emailAuthenticationsTable: os.Getenv("EMAIL_AUTHENTICATIONS_TABLE"),
 		usersTable:                os.Getenv("USERS_TABLE"),
-		dynamoDB:                  awsDynamoDB.New(sess),
+		dynamoDB:                  dynamodb.New(sess),
 	}, nil
 }

@@ -3,10 +3,10 @@ package resolvers
 import (
 	"context"
 	"errors"
-	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
-	"gitlab.com/iotv/services/iotv-api/services/s3"
-	userSvc "gitlab.com/iotv/services/iotv-api/services/user"
-	"gitlab.com/iotv/services/iotv-api/utilities"
+	"github.com/iotv/iotv/services/dynamodb"
+	"github.com/iotv/iotv/services/s3"
+	userSvc "github.com/iotv/iotv/services/user"
+	"github.com/iotv/iotv/lib/utilities"
 )
 
 var (
