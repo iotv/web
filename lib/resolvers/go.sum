@@ -6,9 +6,6 @@ github.com/dgrijalva/jwt-go v3.2.0+incompatible h1:7qlOGliEKZXTDg6OTjfoBKDXWrumC
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/graph-gophers/graphql-go v0.0.0-20190108123631-d5b7dc6be53b h1:hrePtAgLPsHHKUv6l9EDI+QSH5cjPIYYzoIsIWfZ6qY=
 github.com/graph-gophers/graphql-go v0.0.0-20190108123631-d5b7dc6be53b/go.mod h1:aRnZGurV3LlZ1Y+ygyx1mAV6OUfq+nu6OgpJ6jKgZ3g=
-github.com/iotv/iotv v0.0.0-20190109192307-46969e640f64 h1:VgGOb96wb3lgvwsDH1FmdAxENtL2wgBgCy58A85FxsQ=
-github.com/iotv/iotv v0.0.0-20190109192307-46969e640f64/go.mod h1:S1U4/WeWWkBl+ieXVNlxxgUwi3H1hDSlInvgrbcHhcY=
-github.com/iotv/iotv v0.0.0-20190110020148-9714211562e6 h1:04KrwBbe1NExDdv8l/pIWLALA4nhHlTG+cU+j3J7R0Y=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af h1:pmfjZENx5imkbgOkpRUYLnmbU7UEFbjtDA2hxJ1ichM=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/lucsky/cuid v1.0.2 h1:z4XlExeoderxoPj2/dxKOyPxe9RCOu7yNq9/XWxIUMQ=
