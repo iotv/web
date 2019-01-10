@@ -6,12 +6,12 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/graph-gophers/graphql-go"
-	"gitlab.com/iotv/services/iotv-api/resolvers"
-	"gitlab.com/iotv/services/iotv-api/schema"
-	"gitlab.com/iotv/services/iotv-api/services/dynamodb"
-	"gitlab.com/iotv/services/iotv-api/services/s3"
-	"gitlab.com/iotv/services/iotv-api/services/user"
-	"gitlab.com/iotv/services/iotv-api/utilities"
+	"github.com/iotv/iotv/lib/resolvers"
+	"github.com/iotv/iotv/lib/schema"
+	"github.com/iotv/iotv/lib/services/dynamodb"
+	"github.com/iotv/iotv/lib/services/s3"
+	"github.com/iotv/iotv/lib/services/user"
+	"github.com/iotv/iotv/lib/utilities"
 	"io/ioutil"
 )
 
