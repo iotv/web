@@ -3,9 +3,9 @@ package resolvers
 import (
 	"context"
 	"errors"
-	"github.com/iotv/iotv/services/dynamodb"
-	"github.com/iotv/iotv/services/s3"
-	userSvc "github.com/iotv/iotv/services/user"
+	"github.com/iotv/iotv/lib/services/dynamodb"
+	"github.com/iotv/iotv/lib/services/s3"
+	userSvc "github.com/iotv/iotv/lib/services/user"
 	"github.com/iotv/iotv/lib/utilities"
 )
 
