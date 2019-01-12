@@ -34,19 +34,11 @@ See [https://nerdcave.com/tailwind-cheat-sheet](https://nerdcave.com/tailwind-ch
 
 A css-in-js library for managing component styles. Use `tailwind` for most styling, but `emotion` for customization of individual components.
 
-Note: Files that use `emotion` must currently attach the `jsx` pragma at the top of the file:
-
-```js
-jsx
-import {jsx} from '@emotion/core'
-```
-
 There are a number of ways to use `emotion`, but the preferred style is to create full React components rather than using `emotion.styled`. This can be done using the `css` prop on any element:
 
 ```tsx
-jsx
-import {jsx, css} from '@emotion/core'
 import React, {FunctionComponent} from 'react'
+import {css} from '@emotion/core'
 
 const Card: FunctionComponent = ({color, children}) => (
   <div
