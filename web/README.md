@@ -58,3 +58,30 @@ const Card: FunctionComponent = ({color, children}) => (
   </div>
 )
 ```
+
+### [`@reach/router`](https://github.com/reach/router)
+
+A modern, accessibility-first router. Great for nesting routes that directly render `children`.
+
+Note: Components that are rendered by a router should add `path?: string` to its props type to avoid a type error.
+
+```js
+import * as React from 'react'
+import {Router} from '@reach/router'
+
+type Props = {
+  color: string
+  path?: string
+}
+
+const Component: FunctionComponent<Props> = ({color}) => <p>Your chosen color is "{color}".</p>
+
+export const App = () => (
+  <div>
+    <Router>
+      <Component color="blue" path="colors/blue" />
+      <Component color="red" path="colors/red" />
+    </Router>
+  </div>
+)
+```
