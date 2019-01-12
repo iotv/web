@@ -1,5 +1,6 @@
-const {addPostcssPlugins, override} = require('customize-cra')
+const {addPostcssPlugins, addBabelPreset, override} = require('customize-cra')
 
 module.exports = override(
+  addBabelPreset('@emotion/babel-preset-css-prop'),
   addPostcssPlugins([require('tailwindcss')('./tailwind.js')]),
 )
