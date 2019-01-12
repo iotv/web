@@ -77,3 +77,27 @@ export const App = () => (
   </div>
 )
 ```
+
+### [`apollo-boost`](https://github.com/apollographql/apollo-client/tree/master/packages/apollo-boost)
+
+Zero-config method for using Apollo Client.
+
+### [`graphql-tag.macro`](https://github.com/leoasis/graphql-tag.macro)
+
+Inlines the result of parsing graphql queries to avoid the runtime overhead of parsing a string into a GraphQL AST.
+
+```js
+import gql from 'graphql-tag.macro'
+
+const query = gql`
+  query {
+    hello {
+      world
+    }
+  }
+`
+```
+
+### [`react-apollo-hooks`](https://github.com/trojanowski/react-apollo-hooks)
+
+[`react-apollo`](https://github.com/apollographql/react-apollo), but as hooks. Written by a `react-apollo` core member with intention of providing easy conversion back to `react-apollo` once hook support is added.
