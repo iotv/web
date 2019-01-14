@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
-	"gitlab.com/iotv/services/iotv-api/events"
-	"gitlab.com/iotv/services/iotv-api/services/logger"
-	"gitlab.com/iotv/services/iotv-api/services/s3"
+	"github.com/iotv/iotv/lib/events"
+	"github.com/iotv/iotv/lib/services/logger"
+	"github.com/iotv/iotv/lib/services/s3"
 	"os/exec"
 	"strings"
 )

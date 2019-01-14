@@ -78,43 +78,6 @@ functions:
       include:
         - bin/graphql
 
-  onVideoTranscodingComplete:
-    awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
-    handler: bin/on_video_transcoding_complete
-    events:
-      - sns:
-          arn: "${ssm:/services/iotv-api/${opt:stage}/VIDEO_ENCODER_COMPLETE_ARN}"
-    package:
-      exclude:
-        - ./**
-      include:
-        - bin/on_video_transcoding_complete
-
-  #  onVideoTranscodingError:
-  #    handler: bin/on_video_transcoding_error
-  #    events:
-  #      - sns:
-  #          arn: ${self:custom.snsTopics.onVideoTranscodingError.${opt:stage, self:provider.stage}}
-  #    package:
-  #      include:
-  #        - bin/on_video_transcoding_error
-  #  onVideoTranscodingProgressing:
-  #    handler: bin/on_video_transcoding_progressing
-  #    events:
-  #      - sns:
-  #          arn: ${self:custom.snsTopics.onVideoTranscodingProgressing.${opt:stage, self:provider.stage}}
-  #    package:
-  #      include:
-  #        - bin/on_video_transcoding_progressing
-  #  onVideoTranscodingWarning:
-  #    handler: bin/on_video_transcoding_warning
-  #    events:
-  #      - sns:
-  #          arn: ${self:custom.snsTopics.onVideoTranscodingWarning.${opt:stage, self:provider.stage}}
-  #    package:
-  #      include:
-  #        - bin/on_video_transcoding_warning
-
   onVideoUploadComplete:
     awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
     handler: bin/on_video_upload_complete
