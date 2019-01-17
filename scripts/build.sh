@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+export GOOS="linux"
+
 if [ ! -f bin/ffmpeg-64bit-static.tar.xz ]; then
     mkdir -p bin/layers/ffmpeg
     mkdir -p bin/layers/ffprobe

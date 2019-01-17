@@ -46,19 +46,6 @@ functions:
       include:
         - bin/check_source_video
 
-  encodeSourceVideo:
-    awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
-    environment:
-      SOURCE_VIDEOS_BUCKET: "${ssm:/services/iotv-api/${opt:stage}/SOURCE_VIDEOS_BUCKET}"
-    handler: bin/encode_source_video
-    layers:
-    - {Ref: FfprobeLambdaLayer}
-    package:
-      exclude:
-      - ./**
-      include:
-      - bin/encode_source_video
-
   graphql:
     awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
     handler: bin/graphql
@@ -81,8 +68,6 @@ functions:
   onVideoUploadComplete:
     awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
     handler: bin/on_video_upload_complete
-    environment:
-      WIDESCREEN_FHD_PRESET_ID: "${ssm:/services/iotv-api/${opt:stage}/WIDESCREEN_FHD_PRESET_ID}"
     events:
       - sns:
           arn: "${ssm:/services/iotv-api/${opt:stage}/SOURCE_VIDEO_UPLOADED_ARN}"
