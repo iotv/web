@@ -1,12 +1,14 @@
 import React, {FunctionComponent} from 'react'
 import {Router} from '@reach/router'
 
-const Home: FunctionComponent<{path?: string}> = () => <div>Home</div>
+import Login from './auth/Login'
+import {Routable} from './util/Routable'
+
+const Home: FunctionComponent = () => <div>Home</div>
 
 export const App = () => (
-  <div>
-    <Router>
-      <Home path="/" />
-    </Router>
-  </div>
+  <Router>
+    <Routable component={<Home />} path="/" />
+    <Routable component={<Login />} path="/auth/login" />
+  </Router>
 )

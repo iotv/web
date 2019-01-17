@@ -39,7 +39,7 @@ func (h *handler) GraphQL(ctx context.Context, e events.APIGatewayProxyRequest) 
 			"Access-Control-Allow-Origin": "*",
 			"Access-Control-Allow-Credentials": "true",
 			"Access-Control-Allow-Methods": "OPTIONS, POST",
-			"Access-Control-Allow-Headers": "Authorization, X-Correlation-ID, X-Request-ID",
+			"Access-Control-Allow-Headers": "Authorization, Content-Type, X-Correlation-ID, X-Request-ID",
 		},
 		Body:       string(respBody),
 		StatusCode: 200,
