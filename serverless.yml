@@ -14,10 +14,8 @@ provider:
   runtime: go1.x
   versionFunctions: false
 
-
 package:
   individually: true
-
 
 layers:
   ffmpeg:
@@ -39,7 +37,7 @@ functions:
       SOURCE_VIDEOS_BUCKET: "${ssm:/services/iotv-api/${opt:stage}/SOURCE_VIDEOS_BUCKET}"
     handler: bin/check_source_video
     layers:
-      - {Ref: FfprobeLambdaLayer}
+      - { Ref: FfprobeLambdaLayer }
     package:
       exclude:
         - ./**
