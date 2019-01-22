@@ -1,3 +1,9 @@
+variable "aws_region" {
+  description = "The AWS region for this provider"
+  type = "string"
+  default = "us-east-1"
+}
+
 variable "org_name" {
   description = "The name of your organization to use for this terraform module"
   type        = "string"
