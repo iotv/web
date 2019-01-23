@@ -32,3 +32,7 @@ go build \
     -ldflags="-s -w" \
     -o ../../bin/on_video_upload_complete
 cd ../../
+
+cd web
+yarn install
+yarn build

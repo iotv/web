@@ -1,3 +1,11 @@
+output "iotv_bucket_arn" {
+  value = "${module.iotv_co.s3_bucket_arn}"
+}
+
+output "iotv_distribution_id" {
+  value = "${module.iotv_co.cloudfront_distribution_id}"
+}
+
 output "source_video_uploaded_arn" {
   value = "${aws_sns_topic.source_video_uploaded.arn}"
 }
