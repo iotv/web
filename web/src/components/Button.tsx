@@ -1,11 +1,11 @@
-import React, {FunctionComponent} from 'react'
-import {css} from '@emotion/core'
+import React, {FunctionComponent, ReactNode} from 'react'
 export type ButtonProps = {
   disabled: boolean
   type: string
-  text: string
+  children: ReactNode
 }
-const Button: FunctionComponent<Partial<ButtonProps>> = props => (
+
+export const Button: FunctionComponent<Partial<ButtonProps>> = props => (
   <button
     className={
       'flex bg-blue-dark hover:bg-blue text-white font-bold py-2 px-4 rounded'
@@ -13,8 +13,6 @@ const Button: FunctionComponent<Partial<ButtonProps>> = props => (
     disabled={props.disabled}
     type={props.type ? props.type : 'submit'}
   >
-    {props.text}
+    {props.children}
   </button>
 )
-
-export default Button
