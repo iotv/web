@@ -4,7 +4,7 @@ import {ErrorMessage, Field, Formik, Form} from 'formik'
 import gql from 'graphql-tag'
 import get from 'lodash/get'
 
-import Button from '../components/Button'
+import {Button} from '../components/Button'
 
 const LOGIN_WITH_EMAIL_AND_PASSWORD = gql`
   mutation loginWithEmailAndPassword($email: String!, $password: String!) {
@@ -17,7 +17,7 @@ const LOGIN_WITH_EMAIL_AND_PASSWORD = gql`
   }
 `
 
-const Login: FunctionComponent<{}> = () => {
+export const Login: FunctionComponent<{}> = () => {
   const login = useMutation(LOGIN_WITH_EMAIL_AND_PASSWORD)
 
   return (
@@ -48,11 +48,9 @@ const Login: FunctionComponent<{}> = () => {
           <ErrorMessage name="email">{msg => <div>{msg}</div>}</ErrorMessage>
           <Field type="password" name="password" />
           <ErrorMessage name="password">{msg => <div>{msg}</div>}</ErrorMessage>
-          <Button text="Login" disabled={isSubmitting} />
+          <Button disabled={isSubmitting}>Login</Button>
         </Form>
       )}
     </Formik>
   )
 }
-
-export default Login
