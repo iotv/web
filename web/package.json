@@ -16,6 +16,7 @@
     "customize-cra": "0.2.9",
     "formik": "^1.4.2",
     "graphql": "^14.0.2",
+    "graphql-tag.macro": "^2.1.0",
     "lodash": "^4.17.11",
     "react": "16.8.0-alpha.0",
     "react-apollo-hooks": "^0.2.1",
