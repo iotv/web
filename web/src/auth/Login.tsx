@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from 'react'
 import {useMutation} from 'react-apollo-hooks'
 import {ErrorMessage, Field, Formik, Form} from 'formik'
-import Yup from 'yup'
+import * as Yup from 'yup'
 import gql from 'graphql-tag.macro'
 import get from 'lodash/get'
 

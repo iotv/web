@@ -2,12 +2,11 @@ import React, {FunctionComponent} from 'react'
 import {Router} from '@reach/router'
 
 import {Login} from './auth/Login'
-
-const Home: FunctionComponent = () => <div>Home</div>
+import {HypePageView} from './HypePageView'
 
 export const App = () => (
   <Router>
-    <Home path="/" />
+    <HypePageView path="/" />
     <Login path="/auth/login" />
   </Router>
 )
