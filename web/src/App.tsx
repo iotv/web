@@ -1,12 +1,14 @@
-import React, {FunctionComponent} from 'react'
+import React from 'react'
 import {Router} from '@reach/router'
 
-import {Login} from './auth/Login'
+import {LoginForm} from './auth/LoginForm'
+import {SignUpForm} from './auth/SignUpForm'
 import {HypePageView} from './HypePageView'
 
 export const App = () => (
   <Router>
     <HypePageView path="/" />
-    <Login path="/auth/login" />
+    <LoginForm path="/auth/login" />
+    <SignUpForm path="/auth/signup" />
   </Router>
 )
