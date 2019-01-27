@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from 'react'
 import {useMutation} from 'react-apollo-hooks'
 import {ErrorMessage, Field, Formik, Form} from 'formik'
-import gql from '@iotv/graphql-tag.macro'
+import gql from 'graphql-tag.macro'
 import get from 'lodash/get'
 
 import {Button} from '../components/Button'

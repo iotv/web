@@ -5,7 +5,6 @@
   "dependencies": {
     "@emotion/babel-preset-css-prop": "^10.0.6",
     "@emotion/core": "^10.0.6",
-    "@iotv/graphql-tag.macro": "^2.2.1",
     "@reach/router": "^1.2.1",
     "@types/jest": "^23.3.12",
     "@types/lodash": "^4.14.119",
@@ -17,6 +16,7 @@
     "customize-cra": "0.2.9",
     "formik": "^1.4.2",
     "graphql": "^14.0.2",
+    "graphql-tag.macro": "^2.1.0",
     "lodash": "^4.17.11",
     "react": "16.8.0-alpha.0",
     "react-apollo-hooks": "^0.2.1",

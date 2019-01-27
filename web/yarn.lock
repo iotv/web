@@ -958,16 +958,6 @@
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.2.tgz#63985d3d8b02530e0869962f4da09142ee8e200e"
   integrity sha512-n/VQ4mbfr81aqkx/XmVicOLjviMuy02eenSdJY33SVA7S2J42EU0P1H0mOogfYedb3wXA0d/LVtBrgTSm04WEA==
 
-"@iotv/graphql-tag.macro@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@iotv/graphql-tag.macro/-/graphql-tag.macro-2.2.1.tgz#124a87907af81c554fbca7efc87233441fb44b71"
-  integrity sha512-ELwLse5fwg6/143rcGZ1MIy6GtQghdgx6ZGt0ipCd30O41iE2YvhjCDdbvJGO4H8QgHzE8bX2t/3l2f8QzG8dA==
-  dependencies:
-    babel-literal-to-ast "^2.0.0"
-    babel-plugin-macros "^2.4.2"
-    graphql "^14.0.2"
-    graphql-tag "^2.10.0"
-
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -4595,6 +4585,16 @@ graphql-anywhere@^4.1.0-alpha.0:
   integrity sha512-g81K7FqXSF3q1iqFWlwiwD+g0SDkPUUa9+Wa+7BOrAe5+7R4BdNWL4dw9BRsJxt0Xx6nOaI2E+VM7QMAucQFvA==
   dependencies:
     apollo-utilities "^1.0.27"
+
+graphql-tag.macro@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/graphql-tag.macro/-/graphql-tag.macro-2.1.0.tgz#442e10f766c92411a4627ff9dbb136019b40242f"
+  integrity sha512-hH+8bnhgFz2sWPsKAGDhCJ6QHGQxxI2AyzgZUQ9eWNF3aIeSUbSheP+0Fh0FSTVu6NDBVpM0Iq7TBItTQQsVWA==
+  dependencies:
+    babel-literal-to-ast "^2.0.0"
+    babel-plugin-macros "^2.4.2"
+    graphql "^14.0.2"
+    graphql-tag "^2.10.0"
 
 graphql-tag@^2.10.0:
   version "2.10.1"
