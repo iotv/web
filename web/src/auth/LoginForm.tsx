@@ -45,17 +45,17 @@ export const LoginForm: FunctionComponent<{}> = () => {
         <Form>
           <div>
             <label htmlFor="email">Email</label>
-            <Field type="email" name="email">
-              {(props: FieldProps) => <Input type={'email'} {...props.field} />}
+            <Field name="email">
+              {(props: FieldProps) => <Input {...props.field} type="email" />}
             </Field>
             <ErrorMessage name="email" />
           </div>
 
           <div>
             <label htmlFor="password">Password</label>
-            <Field type="password" name="password">
+            <Field name="password">
               {(props: FieldProps) => (
-                <Input type={'password'} {...props.field} />
+                <Input {...props.field} type="password" />
               )}
             </Field>
             <ErrorMessage name="password" />

@@ -6,9 +6,8 @@ type Props = {
 
 export const HypeMainHeader: FunctionComponent<Partial<Props>> = props => (
   <h1
-    className={`font-sans font-thin text-5xl text-grey-light ${
-      props.className ? props.className : ''
-    }`}
+    className={`font-sans font-thin text-5xl text-grey-light ${props.className ||
+      ''}`}
   >
     {props.children}
   </h1>

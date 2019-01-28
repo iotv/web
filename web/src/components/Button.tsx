@@ -21,7 +21,7 @@ export const Button: FunctionComponent<Partial<ButtonProps>> = props => {
       }
       disabled={props.disabled}
       onClick={onClickHandler}
-      type={props.type ? props.type : 'submit'}
+      type={props.type || 'submit'}
     >
       {props.children}
     </button>
