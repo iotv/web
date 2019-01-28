@@ -1,11 +1,12 @@
 import React, {FunctionComponent} from 'react'
 import {useMutation} from 'react-apollo-hooks'
-import {ErrorMessage, Field, Formik, Form} from 'formik'
+import {ErrorMessage, Field, FieldProps, Formik, Form} from 'formik'
 import * as Yup from 'yup'
 import gql from 'graphql-tag.macro'
 import get from 'lodash/get'
 
 import {Button} from '../components/Button'
+import {Input} from '../components/Input'
 
 const LOGIN_WITH_EMAIL_AND_PASSWORD = gql`
   mutation loginWithEmailAndPassword($email: String!, $password: String!) {
@@ -44,13 +45,19 @@ export const LoginForm: FunctionComponent<{}> = () => {
         <Form>
           <div>
             <label htmlFor="email">Email</label>
-            <Field type="email" name="email" />
+            <Field type="email" name="email">
+              {(props: FieldProps) => <Input type={'email'} {...props.field} />}
+            </Field>
             <ErrorMessage name="email" />
           </div>
 
           <div>
             <label htmlFor="password">Password</label>
-            <Field type="password" name="password" />
+            <Field type="password" name="password">
+              {(props: FieldProps) => (
+                <Input type={'password'} {...props.field} />
+              )}
+            </Field>
             <ErrorMessage name="password" />
           </div>
           <Button disabled={isSubmitting}>Login</Button>
