@@ -37,7 +37,7 @@ func (c *config) CreateUserWithEmailAndPassword(ctx context.Context, emailAddres
 			{
 				Put: &dynamodb.Put{
 					TableName:           aws.String(c.usersTable),
-					ConditionExpression: aws.String("attribute_not_exists(UserId) AND attribute_not_exists(EmailAddress) AND attribute_not_exists(UserName)"),
+					ConditionExpression: aws.String("attribute_not_exists(UserId)"),
 					Item: map[string]*dynamodb.AttributeValue{
 						"UserId": {
 							S: aws.String(newUserId),
