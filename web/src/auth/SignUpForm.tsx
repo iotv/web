@@ -7,6 +7,7 @@ import get from 'lodash/get'
 
 import {Button} from '../components/Button'
 import {Input, getFormikClassName} from '../components/Input'
+import {FormLabel} from '../components/FormLabel'
 
 const CREATE_USER_WITH_PASSWORD = gql`
   mutation createUserWithPassword(
@@ -55,7 +56,7 @@ export const SignUpForm: FunctionComponent = props => {
       {({isSubmitting}) => (
         <Form>
           <div>
-            <label htmlFor="email">Email</label>
+            <FormLabel htmlFor="email">Email</FormLabel>
             <Field name="email">
               {(props: FieldProps) => (
                 <Input
@@ -67,8 +68,9 @@ export const SignUpForm: FunctionComponent = props => {
             </Field>
             <ErrorMessage name="email" />
           </div>
+
           <div>
-            <label htmlFor="userName">User Name</label>
+            <FormLabel htmlFor="userName">User Name</FormLabel>
             <Field name="userName">
               {(props: FieldProps) => (
                 <Input className={getFormikClassName(props)} {...props.field} />
@@ -76,8 +78,9 @@ export const SignUpForm: FunctionComponent = props => {
             </Field>
             <ErrorMessage name="userName" />
           </div>
+
           <div>
-            <label htmlFor="password">Password</label>
+            <FormLabel htmlFor="password">Password</FormLabel>
             <Field name="password">
               {(props: FieldProps) => (
                 <Input
@@ -89,6 +92,7 @@ export const SignUpForm: FunctionComponent = props => {
             </Field>
             <ErrorMessage name="password" />
           </div>
+
           <Button disabled={isSubmitting}>Sign Up</Button>
         </Form>
       )}

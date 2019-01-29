@@ -7,6 +7,7 @@ import get from 'lodash/get'
 
 import {Button} from '../components/Button'
 import {Input, getFormikClassName} from '../components/Input'
+import {FormLabel} from '../components/FormLabel'
 
 const LOGIN_WITH_EMAIL_AND_PASSWORD = gql`
   mutation loginWithEmailAndPassword($email: String!, $password: String!) {
@@ -42,9 +43,9 @@ export const LoginForm: FunctionComponent<{}> = () => {
       }}
     >
       {({isSubmitting}) => (
-        <Form>
-          <div>
-            <label htmlFor="email">Email</label>
+        <Form className={'p-8 bg-white mb-6 rounded-lg shadow-lg'}>
+          <div className={'mb-4'}>
+            <FormLabel htmlFor="email">Email</FormLabel>
             <Field name="email">
               {(props: FieldProps) => (
                 <Input
@@ -57,8 +58,8 @@ export const LoginForm: FunctionComponent<{}> = () => {
             <ErrorMessage name="email" />
           </div>
 
-          <div>
-            <label htmlFor="password">Password</label>
+          <div className={'mb-4'}>
+            <FormLabel htmlFor="password">Password</FormLabel>
             <Field name="password">
               {(props: FieldProps) => (
                 <Input
