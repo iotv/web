@@ -6,7 +6,7 @@ import gql from 'graphql-tag.macro'
 import get from 'lodash/get'
 
 import {Button} from '../components/Button'
-import {Input} from '../components/Input'
+import {Input, getFormikClassName} from '../components/Input'
 
 const LOGIN_WITH_EMAIL_AND_PASSWORD = gql`
   mutation loginWithEmailAndPassword($email: String!, $password: String!) {
@@ -46,7 +46,13 @@ export const LoginForm: FunctionComponent<{}> = () => {
           <div>
             <label htmlFor="email">Email</label>
             <Field name="email">
-              {(props: FieldProps) => <Input {...props.field} type="email" />}
+              {(props: FieldProps) => (
+                <Input
+                  className={getFormikClassName(props)}
+                  {...props.field}
+                  type="email"
+                />
+              )}
             </Field>
             <ErrorMessage name="email" />
           </div>
@@ -55,7 +61,11 @@ export const LoginForm: FunctionComponent<{}> = () => {
             <label htmlFor="password">Password</label>
             <Field name="password">
               {(props: FieldProps) => (
-                <Input {...props.field} type="password" />
+                <Input
+                  className={getFormikClassName(props)}
+                  {...props.field}
+                  type="password"
+                />
               )}
             </Field>
             <ErrorMessage name="password" />

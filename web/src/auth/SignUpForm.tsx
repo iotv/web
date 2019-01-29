@@ -6,7 +6,7 @@ import gql from 'graphql-tag.macro'
 import get from 'lodash/get'
 
 import {Button} from '../components/Button'
-import {Input} from '../components/Input'
+import {Input, getFormikClassName} from '../components/Input'
 
 const CREATE_USER_WITH_PASSWORD = gql`
   mutation createUserWithPassword(
@@ -35,8 +35,8 @@ const SignUpSchema = Yup.object().shape({
     .min(8, 'Must be 8 or more characters')
     .required('Required'),
   userName: Yup.string()
-    .max(32, 'Must be 8-32 characters')
-    .min(4, 'Must be 8-32 characters')
+    .max(32, 'Must be 4-32 characters')
+    .min(4, 'Must be 4-32 characters')
     .required('Required'),
 })
 
@@ -57,14 +57,22 @@ export const SignUpForm: FunctionComponent = props => {
           <div>
             <label htmlFor="email">Email</label>
             <Field name="email">
-              {(props: FieldProps) => <Input {...props.field} type="email" />}
+              {(props: FieldProps) => (
+                <Input
+                  className={getFormikClassName(props)}
+                  {...props.field}
+                  type="email"
+                />
+              )}
             </Field>
             <ErrorMessage name="email" />
           </div>
           <div>
             <label htmlFor="userName">User Name</label>
             <Field name="userName">
-              {(props: FieldProps) => <Input {...props.field} />}
+              {(props: FieldProps) => (
+                <Input className={getFormikClassName(props)} {...props.field} />
+              )}
             </Field>
             <ErrorMessage name="userName" />
           </div>
@@ -72,7 +80,11 @@ export const SignUpForm: FunctionComponent = props => {
             <label htmlFor="password">Password</label>
             <Field name="password">
               {(props: FieldProps) => (
-                <Input {...props.field} type="password" />
+                <Input
+                  className={getFormikClassName(props)}
+                  {...props.field}
+                  type="password"
+                />
               )}
             </Field>
             <ErrorMessage name="password" />

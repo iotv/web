@@ -1,4 +1,5 @@
 import React, {ChangeEvent, FunctionComponent} from 'react'
+import {FieldProps} from 'formik'
 
 type Props = {
   className: string
@@ -7,6 +8,15 @@ type Props = {
   onChange: (e: ChangeEvent<any>) => void
   type: 'email' | 'password' | 'text' // Add more as needed
   value: any
+}
+
+export function getFormikClassName(props: FieldProps) {
+  if (
+    props.form.touched[props.field.name] &&
+    props.form.errors[props.field.name]
+  ) {
+    return 'border-red-light hover:border-red text-red'
+  }
 }
 
 export const Input: FunctionComponent<Partial<Props>> = props => (
