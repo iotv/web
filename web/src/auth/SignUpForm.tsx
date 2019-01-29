@@ -1,13 +1,14 @@
 import React, {FunctionComponent} from 'react'
 import {useMutation} from 'react-apollo-hooks'
-import {ErrorMessage, Field, FieldProps, Formik, Form} from 'formik'
+import {Field, FieldProps, Formik, Form} from 'formik'
 import * as Yup from 'yup'
 import gql from 'graphql-tag.macro'
 import get from 'lodash/get'
 
 import {Button} from '../components/Button'
-import {Input, getFormikClassName} from '../components/Input'
+import {FormErrorMessage} from '../components/FormErrorMessage'
 import {FormLabel} from '../components/FormLabel'
+import {Input, getFormikClassName} from '../components/Input'
 
 const CREATE_USER_WITH_PASSWORD = gql`
   mutation createUserWithPassword(
@@ -54,8 +55,8 @@ export const SignUpForm: FunctionComponent = props => {
       }}
     >
       {({isSubmitting}) => (
-        <Form>
-          <div>
+        <Form className={'p-8 bg-white mb-6 rounded-lg shadow-lg'}>
+          <div className={'mb-4'}>
             <FormLabel htmlFor="email">Email</FormLabel>
             <Field name="email">
               {(props: FieldProps) => (
@@ -66,20 +67,20 @@ export const SignUpForm: FunctionComponent = props => {
                 />
               )}
             </Field>
-            <ErrorMessage name="email" />
+            <FormErrorMessage name="email" />
           </div>
 
-          <div>
+          <div className={'mb-4'}>
             <FormLabel htmlFor="userName">User Name</FormLabel>
             <Field name="userName">
               {(props: FieldProps) => (
                 <Input className={getFormikClassName(props)} {...props.field} />
               )}
             </Field>
-            <ErrorMessage name="userName" />
+            <FormErrorMessage name="userName" />
           </div>
 
-          <div>
+          <div className={'mb-4'}>
             <FormLabel htmlFor="password">Password</FormLabel>
             <Field name="password">
               {(props: FieldProps) => (
@@ -90,7 +91,7 @@ export const SignUpForm: FunctionComponent = props => {
                 />
               )}
             </Field>
-            <ErrorMessage name="password" />
+            <FormErrorMessage name="password" />
           </div>
 
           <Button disabled={isSubmitting}>Sign Up</Button>

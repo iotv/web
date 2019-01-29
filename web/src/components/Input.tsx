@@ -15,7 +15,7 @@ export function getFormikClassName(props: FieldProps) {
     props.form.touched[props.field.name] &&
     props.form.errors[props.field.name]
   ) {
-    return 'border-red-light hover:border-red text-red'
+    return 'border-red-light hover:border-red text-red focus:text-black'
   }
 }
 
