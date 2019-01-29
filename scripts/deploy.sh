@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -euo pipefail
+set -eu
 
 AWS_DEFAULT_REGION="us-east-1"
 TF_DYNAMODB_TABLE="iotv-terraform-locks"
