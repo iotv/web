@@ -1,12 +1,6 @@
 workflow "Build, test and deploy on push" {
   on = "push"
-  resolves = ["Build graphql", "Install web dependencies"]
-}
-
-action "Build graphql" {
-  uses = "docker://golang@alpine"
-  runs = "sh -c"
-  args = "./scripts/build-graphql.sh"
+  resolves = ["Install web dependencies"]
 }
 
 action "Install web dependencies" {
