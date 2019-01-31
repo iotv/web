@@ -10,4 +10,4 @@ LABEL "homepage"="https://iotv.co"
 LABEL "maintainer"="David J Felix <felix.davidj@gmail.com>"
 
 ADD entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
