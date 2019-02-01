@@ -15,22 +15,10 @@ mv bin/ffmpeg-4.0.3-64bit-static/ffmpeg bin/layers/ffmpeg/ffprove
 mv bin/ffmpeg-4.0.3-64bit-static/ffprobe bin/layers/ffprobe/ffprobe
 rm -rf bin/ffmpeg-git-*-amd64-static/
 
-cd handlers/check_source_video
-go build \
-    -ldflags="-s -w" \
-    -o ../../bin/check_source_video
-cd ../../
-
 cd handlers/graphql
 go build \
     -ldflags="-s -w" \
     -o ../../bin/graphql
-cd ../../
-
-cd handlers/on_video_upload_complete
-go build \
-    -ldflags="-s -w" \
-    -o ../../bin/on_video_upload_complete
 cd ../../
 
 cd web
