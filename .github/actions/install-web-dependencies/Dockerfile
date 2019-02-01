@@ -1,6 +1,6 @@
 FROM node
 
-LABEL "com.github.actions.name"="Install Web Dependencies"
+LABEL "com.github.actions.name"="Install web dependencies"
 LABEL "com.github.actions.description"="Enter the web subdirectory and install dependencies"
 LABEL "com.github.actions.icon"="grid"
 LABEL "com.github.actions.color"="purple"

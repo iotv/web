@@ -1,9 +1,9 @@
-FROM node
+FROM golang
 
-LABEL "com.github.actions.name"="Build web"
-LABEL "com.github.actions.description"="Enter the web subdirectory and build"
+LABEL "com.github.actions.name"="Build graphql"
+LABEL "com.github.actions.description"="Enter the graphql subdirectory and build"
 LABEL "com.github.actions.icon"="archive"
-LABEL "com.github.actions.color"="purple"
+LABEL "com.github.actions.color"="blue"
 
 LABEL "repository"="https://github.com/iotv/iotv"
 LABEL "homepage"="https://iotv.co"
