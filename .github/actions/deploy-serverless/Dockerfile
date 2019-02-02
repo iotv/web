@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
 
 LABEL "com.github.actions.name"="Build web"
 LABEL "com.github.actions.description"="Enter the web subdirectory and build"
-LABEL "com.github.actions.icon"="package"
+LABEL "com.github.actions.icon"="upload-cloud"
 LABEL "com.github.actions.color"="yellow"
 
 LABEL "repository"="https://github.com/iotv/iotv"
