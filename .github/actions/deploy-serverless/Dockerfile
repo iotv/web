@@ -1,8 +1,12 @@
 FROM node
 
-LABEL "com.github.actions.name"="Install web dependencies"
-LABEL "com.github.actions.description"="Enter the web subdirectory and install dependencies"
-LABEL "com.github.actions.icon"="grid"
+RUN apt-get update && apt-get install -y \
+  jq \
+  && rm -rf /var/lib/apt/lists/*
+
+LABEL "com.github.actions.name"="Build web"
+LABEL "com.github.actions.description"="Enter the web subdirectory and build"
+LABEL "com.github.actions.icon"="package"
 LABEL "com.github.actions.color"="yellow"
 
 LABEL "repository"="https://github.com/iotv/iotv"

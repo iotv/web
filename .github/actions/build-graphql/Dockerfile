@@ -2,7 +2,7 @@ FROM golang
 
 LABEL "com.github.actions.name"="Build graphql"
 LABEL "com.github.actions.description"="Enter the graphql subdirectory and build"
-LABEL "com.github.actions.icon"="archive"
+LABEL "com.github.actions.icon"="package"
 LABEL "com.github.actions.color"="blue"
 
 LABEL "repository"="https://github.com/iotv/iotv"

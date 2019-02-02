@@ -33,9 +33,12 @@ output "video_encoder_warning_arn" {
 // A bit of a ghetto hack because `terraform output -json` doesn't work with remote state
 resource "local_file" "output" {
   filename = "${path.cwd}/bin/.terraform-output"
+
   content = <<EOF
 {
-  "stage": "${var.stage}"
+  "stage": "${var.stage}",
+  "web_bucket_id": "${module.iotv_co.s3_bucket_id}",
+  "web_distribution_id": "${module.iotv_co.cloudfront_distribution_id}"
 }
 EOF
 }
