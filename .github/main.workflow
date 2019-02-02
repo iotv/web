@@ -36,7 +36,7 @@ action "Deploy web" {
 
   needs   = ["Deploy terraform"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
-  uses    = "actions/aws/cli"
+  uses    = "actions/aws/cli@master"
 }
 
 action "Deploy serverless" {
@@ -60,5 +60,5 @@ action "Invalidate cloudfront cache" {
 
   needs   = ["Deploy web"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
-  uses    = "actions/aws/cli"
+  uses    = "actions/aws/cli@master"
 }
