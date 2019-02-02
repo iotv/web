@@ -1,12 +1,8 @@
 FROM node
 
-RUN apt-get update && apt-get install -y \
-  jq \
-  && rm -rf /var/lib/apt/lists/*
-
-LABEL "com.github.actions.name"="Deploy serverless"
-LABEL "com.github.actions.description"="Use serverless to deploy"
-LABEL "com.github.actions.icon"="upload-cloud"
+LABEL "com.github.actions.name"="Install serverless dependencies"
+LABEL "com.github.actions.description"="Install dependencies for serverless deploy"
+LABEL "com.github.actions.icon"="grid"
 LABEL "com.github.actions.color"="orange"
 
 LABEL "repository"="https://github.com/iotv/iotv"

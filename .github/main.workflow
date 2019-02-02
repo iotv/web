@@ -7,6 +7,10 @@ action "Install web dependencies" {
   uses = "./.github/actions/install-web-dependencies"
 }
 
+action "Install serverless dependencies" {
+  uses = "./.github/actions/install-serverless-dependencies"
+}
+
 action "Build web" {
   needs = ["Install web dependencies"]
   uses = "./.github/actions/build-web"
@@ -46,7 +50,7 @@ action "Deploy serverless" {
     AWS_DEFAULT_REGION = "us-east-1"
   }
 
-  needs   = ["Deploy terraform"]
+  needs   = ["Deploy terraform", "Install serverless dependencies"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
   uses    = "./.github/actions/deploy-serverless"
 }
