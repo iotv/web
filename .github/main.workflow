@@ -34,7 +34,7 @@ action "Deploy web" {
     AWS_DEFAULT_REGION = "us-east-1"
   }
 
-  needs   = ["Deploy terraform"]
+  needs   = ["Deploy terraform", "Deploy serverless"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
   uses    = "actions/aws/cli@master"
 }
