@@ -12,5 +12,5 @@ terraform init \
   terraform/
 
 terraform apply \
-  -auto-approve
+  -auto-approve \
   terraform/
