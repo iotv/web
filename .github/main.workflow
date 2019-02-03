@@ -56,7 +56,7 @@ action "Deploy serverless" {
 }
 
 action "Invalidate cloudfront cache" {
-  args = "cloudfront create-invalidation --distribution-id `jq -r .web_distribution_id` --paths '/*'"
+  args = "cloudfront create-invalidation --distribution-id `jq -r .web_distribution_id ./bin/.terraform-output` --paths '/*'"
 
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
