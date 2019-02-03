@@ -34,6 +34,7 @@ action "Deploy terraform" {
 }
 
 action "Deploy web" {
+  args = "s3 sync web/build s3://`jq -r .web_bucket_id ./bin/.terraform-output`"
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
@@ -44,8 +45,6 @@ action "Deploy web" {
 }
 
 action "Deploy serverless" {
-  args = "aws s3 sync web/build s3://`jq -r .web_bucket_id ./bin/.terraform-output`"
-
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
