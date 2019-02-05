@@ -5,21 +5,8 @@ resource "aws_dynamodb_table" "authentications" {
   }
 
   attribute {
-    name = "EmailAuthenticationId"
-    type = "S"
-  }
-
-  attribute {
     name = "UserId"
     type = "S"
-  }
-
-  global_secondary_index {
-    hash_key        = "EmailAuthenticationId"
-    name            = "EmailAuthenticationIdIndex"
-    projection_type = "KEYS_ONLY"
-    read_capacity   = 1
-    write_capacity  = 1
   }
 
   global_secondary_index {
@@ -50,21 +37,8 @@ resource "aws_dynamodb_table" "authentications" {
 
 resource "aws_dynamodb_table" "authentications_email_authentication_id_unique_index" {
   attribute {
-    name = "AuthenticationId"
-    type = "S"
-  }
-
-  attribute {
     name = "EmailAuthenticationId"
     type = "S"
-  }
-
-  global_secondary_index {
-    hash_key        = "AuthenticationId"
-    name            = "AuthenticationIdIndex"
-    projection_type = "KEYS_ONLY"
-    read_capacity   = 1
-    write_capacity  = 1
   }
 
   hash_key      = "EmailAuthenticationId"
@@ -91,33 +65,7 @@ resource "aws_dynamodb_table" "email_authentications" {
     type = "S"
   }
 
-  attribute {
-    name = "Email"
-    type = "S"
-  }
-
-  attribute {
-    name = "UserId"
-    type = "S"
-  }
-
-  global_secondary_index {
-    hash_key        = "Email"
-    name            = "EmailIndex"
-    projection_type = "KEYS_ONLY"
-    read_capacity   = 1
-    write_capacity  = 1
-  }
-
-  global_secondary_index {
-    hash_key        = "UserId"
-    name            = "UserIdIndex"
-    projection_type = "KEYS_ONLY"
-    read_capacity   = 1
-    write_capacity  = 1
-  }
-
-  hash_key      = "Email"
+  hash_key      = "EmailAuthenticationId"
   name          = "EmailAuthentications-${var.stage}-${random_string.stack_id.result}"
   read_capacity = 1
 
@@ -141,43 +89,46 @@ resource "aws_dynamodb_table" "email_authentications_email_unique_index" {
     type = "S"
   }
 
-  attribute {
-    name = "EmailAuthenticationId"
-    type = "S"
+  hash_key      = "Email"
+  name          = "EmailAuthenticationsEmailUniqueIndex--${var.stage}-${random_string.stack_id.result}"
+  read_capacity = 1
+
+  server_side_encryption {
+    enabled = true
   }
 
-  global_secondary_index {
-    hash_key        = "EmailAuthenticationId"
-    name            = "EmailAuthenticationIdIndex"
-    projection_type = "KEYS_ONLY"
-    read_capacity   = 1
-    write_capacity  = 1
-  }
+  write_capacity = 1
 
-  hash_key = "Email"
-  name     = "EmailAuthenticationsEmailUniqueIndex--${var.stage}-${random_string.stack_id.result}"
+  tags {
+    Application = "${var.app_name}"
+    Environment = "${var.stage}"
+    Name        = "${var.app_name} Email Authentications Email Unique Index ${random_string.stack_id.result}"
+    Stack       = "${var.org_name}-users"
+  }
 }
 
 resource "aws_dynamodb_table" "email_authentications_user_id_unique_index" {
-  attribute {
-    name = "EmailAuthenticationId"
-    type = "S"
-  }
   attribute {
     name = "UserId"
     type = "S"
   }
 
-  global_secondary_index {
-    hash_key        = "EmailAuthenticationId"
-    name            = "EmailAuthenticationIdIndex"
-    projection_type = "KEYS_ONLY"
-    read_capacity   = 1
-    write_capacity  = 1
+  hash_key      = "UserId"
+  name          = "EmailAuthenticationsUserIdUniqueIndex--${var.stage}-${random_string.stack_id.result}"
+  read_capacity = 1
+
+  server_side_encryption {
+    enabled = true
   }
 
-  hash_key = "UserId"
-  name     = "EmailAuthenticationsUserIdUniqueIndex--${var.stage}-${random_string.stack_id.result}"
+  write_capacity = 1
+
+  tags {
+    Application = "${var.app_name}"
+    Environment = "${var.stage}"
+    Name        = "${var.app_name} Email Authentications User Id Unique Index ${random_string.stack_id.result}"
+    Stack       = "${var.org_name}-users"
+  }
 }
 
 resource "aws_dynamodb_table" "users" {
@@ -210,11 +161,6 @@ resource "aws_dynamodb_table" "users_user_name_unique_index" {
     type = "S"
   }
 
-  attribute {
-    name = "UserId"
-    type = "S"
-  }
-
   hash_key      = "UserName"
   name          = "UsersUserNameUniqueIndex-${var.stage}-${random_string.stack_id.result}"
   read_capacity = 1
@@ -239,11 +185,8 @@ resource "aws_dynamodb_table" "users_email_unique_index" {
     type = "S"
   }
 
-  attribute {
-    name = "UserId"
-    type = "S"
-  }
-
+  hash_key      = "Email"
+  name          = "UsersEmailUniqueIndex-${var.stage}-${random_string.stack_id.result}"
   read_capacity = 1
 
   server_side_encryption {
@@ -251,9 +194,6 @@ resource "aws_dynamodb_table" "users_email_unique_index" {
   }
 
   write_capacity = 1
-
-  hash_key = "Email"
-  name     = "UsersEmailUniqueIndex-${var.stage}-${random_string.stack_id.result}"
 
   tags {
     Application = "${var.app_name}"

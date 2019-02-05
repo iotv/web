@@ -36,3 +36,7 @@ resource "aws_iam_policy" "allow_full_users_dynamo_access" {
   name        = "UsersDBFullAccess-${var.stage}-${random_string.stack_id.result}"
   policy      = "${data.aws_iam_policy_document.allow_full_users_dynamo_access.json}"
 }
+
+resource "aws_iam_service_linked_role" "dynamodb_autoscaling" {
+  aws_service_name = "dynamodb.application-autoscaling.amazonaws.com"
+}
