@@ -1,3 +1,7 @@
+data "aws_iam_role" "dynamodb_autoscaling" {
+  name = "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+}
+
 data "aws_iam_policy_document" "allow_full_users_dynamo_access" {
   statement {
     effect = "Allow"
@@ -35,9 +39,4 @@ resource "aws_iam_policy" "allow_full_users_dynamo_access" {
   description = "Allow DynamoDB access to Users ${var.stage}-${random_string.stack_id.result} for ${var.app_name}"
   name        = "UsersDBFullAccess-${var.stage}-${random_string.stack_id.result}"
   policy      = "${data.aws_iam_policy_document.allow_full_users_dynamo_access.json}"
-}
-
-resource "aws_iam_service_linked_role" "dynamodb_autoscaling" {
-  aws_service_name = "dynamodb.application-autoscaling.amazonaws.com"
-  custom_suffix    = "${random_string.stack_id.result}"
 }
