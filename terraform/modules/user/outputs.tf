@@ -18,7 +18,7 @@ output "email_authentications_email_unique_index_name" {
   value = "${aws_dynamodb_table.email_authentications_email_unique_index.name}"
 }
 
-output "email_authentications_user_id_unque_index_name" {
+output "email_authentications_user_id_unique_index_name" {
   value = "${aws_dynamodb_table.email_authentications_user_id_unique_index.name}"
 }
 

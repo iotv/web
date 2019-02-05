@@ -50,37 +50,8 @@ resource "aws_iam_policy" "allow_read_from_source_video_s3_bucket" {
 ### Lambda role ###
 ###################
 ## Allow role to use DynamoDB tables ##
-data "aws_iam_policy_document" "allow_lambda_dynamo_access" {
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "dynamodb:PutItem",
-      "dynamodb:GetItem",
-      "dynamodb:Scan",
-      "dynamodb:Query",
-      "dynamodb:UpdateItem",
-    ]
-
-    resources = [
-      "${aws_dynamodb_table.email_authentications.arn}",
-      "${aws_dynamodb_table.email_authentications.arn}/index/*",
-      "${aws_dynamodb_table.source_videos.arn}",
-      "${aws_dynamodb_table.source_videos.arn}/index/*",
-      "${aws_dynamodb_table.users.arn}",
-      "${aws_dynamodb_table.users.arn}/index/*",
-    ]
-  }
-}
-
-resource "aws_iam_policy" "allow_lambda_dynamo_access" {
-  description = "Allow DynamoDB access for ${var.app_name}"
-  name_prefix = "AllowDynamoDBAccess"
-  policy      = "${data.aws_iam_policy_document.allow_lambda_dynamo_access.json}"
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_dynamo" {
-  policy_arn = "${aws_iam_policy.allow_lambda_dynamo_access.arn}"
+resource "aws_iam_role_policy_attachment" "lambda_dynamo_users" {
+  policy_arn = "${module.users.full_access_iam_policy_arn}"
   role       = "${aws_iam_role.api_lambda.name}"
 }
 
