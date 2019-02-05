@@ -39,5 +39,5 @@ resource "aws_iam_policy" "allow_full_users_dynamo_access" {
 
 resource "aws_iam_service_linked_role" "dynamodb_autoscaling" {
   aws_service_name = "dynamodb.application-autoscaling.amazonaws.com"
-  custom_suffix    = "${random_string.stack_id}"
+  custom_suffix    = "${random_string.stack_id.result}"
 }
