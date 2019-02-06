@@ -35,10 +35,16 @@ functions:
     awsKmsKeyArn: "${ssm:/services/iotv-api/${opt:stage}/LAMBDA_KMS_ARN}"
     handler: bin/graphql
     environment:
+      AUTHENTICATIONS_TABLE: "${ssm:/services/iotv-api/${opt:stage}/AUTHENTICATIONS_TABLE}"
+      AUTHENTICATIONS_EMAIL_AUTHENTICATION_ID_UNIQUE_INDEX: "${ssm:/services/iotv-api/${opt:stage}/AUTHENTICATIONS_EMAIL_AUTHENTICATION_ID_UNIQUE_INDEX}"
       EMAIL_AUTHENTICATIONS_TABLE: "${ssm:/services/iotv-api/${opt:stage}/EMAIL_AUTHENTICATIONS_TABLE}"
+      EMAIL_AUTHENTICATIONS_EMAIL_UNIQUE_INDEX: "${ssm:/services/iotv-api/${opt:stage}/EMAIL_AUTHENTICATIONS_EMAIL_UNIQUE_INDEX}"
+      EMAIL_AUTHENTICATIONS_USER_ID_UNIQUE_INDEX: "${ssm:/services/iotv-api/${opt:stage}/EMAIL_AUTHENTICATIONS_USER_ID_UNIQUE_INDEX}"
       JWT_SECRET: "${ssm:/services/iotv-api/${opt:stage}/JWT_SECRET~true}"
       SOURCE_VIDEOS_TABLE: "${ssm:/services/iotv-api/${opt:stage}/SOURCE_VIDEOS_TABLE}"
       USERS_TABLE: "${ssm:/services/iotv-api/${opt:stage}/USERS_TABLE}"
+      USERS_EMAIL_UNIQUE_INDEX: "${ssm:/services/iotv-api/${opt:stage}/USERS_EMAIL_UNIQUE_INDEX}"
+      USERS_USER_NAME_UNIQUE_INDEX: "${ssm:/services/iotv-api/${opt:stage}/USERS_USER_NAME_UNIQUE_INDEX}"
     events:
       - http:
           path: /graphql
