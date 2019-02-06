@@ -25,15 +25,100 @@ type Service interface {
 }
 
 type config struct {
-	emailAuthenticationsTable string
-	usersTable                string
-	dynamoDB                  *dynamodb.DynamoDB
+	authenticationsTable                            string
+	authenticationsEmailAuthenticationIdUniqueIndex string
+	emailAuthenticationsTable                       string
+	emailAuthenticationsEmailUniqueIndex            string
+	emailAuthenticationsUserIdUniqueIndex           string
+	usersTable                                      string
+	usersEmailUniqueIndex                           string
+	usersUserNameUniqueIndex                        string
+	dynamoDB                                        *dynamodb.DynamoDB
 }
 
-func (c *config) CreateUserWithEmailAndPassword(ctx context.Context, emailAddress, userName, hashedPassword string) (*User, error) {
+func (c *config) CreateUserWithEmailAndPassword(ctx context.Context, email, userName, hashedPassword string) (*User, error) {
+	newAuthenticationId := cuid.New()
+	newEmailAuthenticationId := cuid.New()
 	newUserId := cuid.New()
+
 	if _, err := c.dynamoDB.TransactWriteItemsWithContext(ctx, &dynamodb.TransactWriteItemsInput{
 		TransactItems: []*dynamodb.TransactWriteItem{
+			{
+				Put: &dynamodb.Put{
+					TableName:           aws.String(c.authenticationsTable),
+					ConditionExpression: aws.String("attribute_not_exists(AuthenticationId)"),
+					Item: map[string]*dynamodb.AttributeValue{
+						"AuthenticationId": {
+							S: aws.String(newAuthenticationId),
+						},
+						"EmailAuthenticationId": {
+							S: aws.String(newEmailAuthenticationId),
+						},
+					},
+				},
+			},
+			{
+				Put: &dynamodb.Put{
+					TableName:           aws.String(c.authenticationsEmailAuthenticationIdUniqueIndex),
+					ConditionExpression: aws.String("attribute_not_exists(EmailAuthenticationId)"),
+					Item: map[string]*dynamodb.AttributeValue{
+						"EmailAuthenticationId": {
+							S: aws.String(newEmailAuthenticationId),
+						},
+						"AuthenticationId": {
+							S: aws.String(newAuthenticationId),
+						},
+					},
+				},
+			},
+			{
+				Put: &dynamodb.Put{
+					TableName:           aws.String(c.emailAuthenticationsTable),
+					ConditionExpression: aws.String("attribute_not_exists(EmailAuthenticationId)"),
+					Item: map[string]*dynamodb.AttributeValue{
+						"EmailAuthenticationId": {
+							S: aws.String(newEmailAuthenticationId),
+						},
+						"Email": {
+							S: aws.String(email),
+						},
+						"HashedPassword": {
+							S: aws.String(hashedPassword),
+						},
+						"UserId": {
+							S: aws.String(newUserId),
+						},
+					},
+				},
+			},
+			{
+				Put: &dynamodb.Put{
+					TableName:           aws.String(c.emailAuthenticationsEmailUniqueIndex),
+					ConditionExpression: aws.String("attribute_not_exists(Email)"),
+					Item: map[string]*dynamodb.AttributeValue{
+						"Email": {
+							S: aws.String(email),
+						},
+						"EmailAuthenticationId": {
+							S: aws.String(newEmailAuthenticationId),
+						},
+					},
+				},
+			},
+			{
+				Put: &dynamodb.Put{
+					TableName:           aws.String(c.emailAuthenticationsUserIdUniqueIndex),
+					ConditionExpression: aws.String("attribute_not_exists(UserId)"),
+					Item: map[string]*dynamodb.AttributeValue{
+						"UserId": {
+							S: aws.String(newUserId),
+						},
+						"EmailAuthenticationId": {
+							S: aws.String(newEmailAuthenticationId),
+						},
+					},
+				},
+			},
 			{
 				Put: &dynamodb.Put{
 					TableName:           aws.String(c.usersTable),
@@ -42,8 +127,8 @@ func (c *config) CreateUserWithEmailAndPassword(ctx context.Context, emailAddres
 						"UserId": {
 							S: aws.String(newUserId),
 						},
-						"EmailAddress": {
-							S: aws.String(emailAddress),
+						"Email": {
+							S: aws.String(email),
 						},
 						"UserName": {
 							S: aws.String(userName),
@@ -56,14 +141,25 @@ func (c *config) CreateUserWithEmailAndPassword(ctx context.Context, emailAddres
 			},
 			{
 				Put: &dynamodb.Put{
-					TableName:           aws.String(c.emailAuthenticationsTable),
-					ConditionExpression: aws.String("attribute_not_exists(EmailAddress)"),
+					TableName:           aws.String(c.usersEmailUniqueIndex),
+					ConditionExpression: aws.String("attribute_not_exists(Email)"),
 					Item: map[string]*dynamodb.AttributeValue{
-						"EmailAddress": {
-							S: aws.String(emailAddress),
+						"Email": {
+							S: aws.String(email),
 						},
-						"HashedPassword": {
-							S: aws.String(hashedPassword),
+						"UserId": {
+							S: aws.String(newUserId),
+						},
+					},
+				},
+			},
+			{
+				Put: &dynamodb.Put{
+					TableName:           aws.String(c.usersUserNameUniqueIndex),
+					ConditionExpression: aws.String("attribute_not_exists(UserName)"),
+					Item: map[string]*dynamodb.AttributeValue{
+						"UserName": {
+							S: aws.String(userName),
 						},
 						"UserId": {
 							S: aws.String(newUserId),
@@ -78,7 +174,7 @@ func (c *config) CreateUserWithEmailAndPassword(ctx context.Context, emailAddres
 	} else {
 		return &User{
 			UserId:           newUserId,
-			Email:            emailAddress,
+			Email:            email,
 			IsEmailConfirmed: false,
 		}, nil
 	}
@@ -111,8 +207,14 @@ func NewService() (Service, error) {
 	sess, _ := session.NewSession()
 
 	return &config{
-		emailAuthenticationsTable: os.Getenv("EMAIL_AUTHENTICATIONS_TABLE"),
-		usersTable:                os.Getenv("USERS_TABLE"),
-		dynamoDB:                  dynamodb.New(sess),
+		authenticationsTable:                            os.Getenv("AUTHENTICATIONS_TABLE"),
+		authenticationsEmailAuthenticationIdUniqueIndex: os.Getenv("AUTHENTICATIONS_EMAIL_AUTHENTICATION_ID_UNIQUE_INDEX"),
+		emailAuthenticationsTable:                       os.Getenv("EMAIL_AUTHENTICATIONS_TABLE"),
+		emailAuthenticationsEmailUniqueIndex:            os.Getenv("EMAIL_AUTHENTICATIONS_EMAIL_UNIQUE_INDEX"),
+		emailAuthenticationsUserIdUniqueIndex:           os.Getenv("EMAIL_AUTHENTICATIONS_USER_ID_UNIQUE_INDEX"),
+		usersTable:                                      os.Getenv("USERS_TABLE"),
+		usersEmailUniqueIndex:                           os.Getenv("USERS_EMAIL_UNIQUE_INDEX"),
+		usersUserNameUniqueIndex:                        os.Getenv("USERS_USER_NAME_UNIQUE_INDEX"),
+		dynamoDB:                                        dynamodb.New(sess),
 	}, nil
 }
