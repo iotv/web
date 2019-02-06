@@ -8,8 +8,8 @@ export type ButtonProps = {
 
 export const Button: FunctionComponent<Partial<ButtonProps>> = props => {
   function onClickHandler(event: SyntheticEvent) {
-    event.preventDefault()
     if (props.onClick) {
+      event.preventDefault()
       props.onClick()
     }
   }
