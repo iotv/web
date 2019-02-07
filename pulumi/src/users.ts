@@ -2,6 +2,10 @@ import * as pulumi from '@pulumi/pulumi'
 import * as aws from '@pulumi/aws'
 import {flatten, getOr, pick} from 'lodash/fp'
 
+type Database = {
+  mainTable: aws.dynamodb.Table
+  uniqueKeyTables: aws.dynamodb.Table[]
+}
 type DatabaseOptions = {
   uniqueKeys: string[]
   globalSecondaryIndices: string[]
@@ -10,39 +14,41 @@ function createDatabase(
   name: string,
   hashKey: string,
   options?: Partial<DatabaseOptions>,
-): aws.dynamodb.Table[] {
+): Database {
   const mainTable = new aws.dynamodb.Table(name, {
-    attributes: [
-      hashKey,
-      ...(options && options.globalSecondaryIndices
-        ? options.globalSecondaryIndices
-        : []),
-    ].map(name => ({name, type: 'S'})),
+    attributes: [hashKey, ...getOr([], 'globalSecondaryIndices', options)!].map(
+      name => ({name, type: 'S'}),
+    ),
     globalSecondaryIndexes: [
-      ...(options && options.globalSecondaryIndices
-        ? options.globalSecondaryIndices
-        : []),
+      ...getOr([], 'globalSecondaryIndices', options)!,
     ].map(hashKey => ({
+      readCapacity: 1,
+      writeCapacity: 1,
       hashKey,
       name: `${hashKey}Index`,
-      projectionType: 'KEY_ONLY',
+      projectionType: 'KEYS_ONLY',
     })),
     hashKey,
+    readCapacity: 1,
+    writeCapacity: 1,
   })
-  const uniqueKeyTables = [
-    ...(options && options.uniqueKeys ? options.uniqueKeys : []),
-  ].map(
+  const uniqueKeyTables = [...getOr([], 'uniqueKeys', options)!].map(
     hashKey =>
       new aws.dynamodb.Table(`${name}${hashKey}UniqueKey`, {
         attributes: [{name: hashKey, type: 'S'}],
         hashKey,
+        readCapacity: 1,
+        writeCapacity: 1,
       }),
   )
-  createAppautoscalingForTable(name)
+  mainTable.name.apply(name => createAppautoscalingForTable(name))
   uniqueKeyTables.map(table =>
     table.name.apply(name => createAppautoscalingForTable(name)),
   )
-  return [mainTable, ...uniqueKeyTables]
+  return {
+    mainTable,
+    uniqueKeyTables,
+  }
 }
 
 function createAppautoscalingForTable(
@@ -77,7 +83,7 @@ function createAppautoscalingForTable(
             maxCapacity: 10,
             resourceId,
             scalableDimension,
-            serviceNamespace: 'dyanmodb',
+            serviceNamespace: 'dynamodb',
           },
         )
         const policy = new aws.appautoscaling.Policy(
@@ -102,39 +108,55 @@ function createAppautoscalingForTable(
   )
 }
 
-const tables = flatten([
-  createDatabase(`Authentications-${pulumi.getStack()}`, 'AuthenticationId', {
+const authentications = createDatabase(
+  `Authentications-${pulumi.getStack()}`,
+  'AuthenticationId',
+  {
     uniqueKeys: ['EmailAuthenticationId'],
     globalSecondaryIndices: ['UserId'],
-  }),
-  createDatabase(
-    `EmailAuthentications-${pulumi.getStack()}`,
-    'EmailAuthenticationId',
-    {
-      uniqueKeys: ['Email', 'UserId'],
-    },
-  ),
-  createDatabase(`Users-${pulumi.getStack()}`, 'UserId', {
-    uniqueKeys: ['Email', 'UserName'],
-  }),
-])
-export const policy = new aws.iam.Policy('allowFullUsersDynamoAccess', {
-  description: 'Allow DynamoDB access to Users',
-  policy: JSON.stringify({
-    Statement: [
-      {
-        Effect: 'Allow',
-        Action: [
-          'dynamodb:PutItem',
-          'dynamodb:GetItem',
-          'dynamodb:Scan',
-          'dynamodb:Query',
-          'dynamodb:UpdateItem',
-        ],
-        Resource: flatten(
-          tables.map(table => [`${table.arn}`, `${table.arn}/index/*`]),
-        ),
-      },
-    ],
-  }),
+  },
+)
+const emailAuthentications = createDatabase(
+  `EmailAuthentications-${pulumi.getStack()}`,
+  'EmailAuthenticationId',
+  {
+    uniqueKeys: ['Email', 'UserId'],
+  },
+)
+const users = createDatabase(`Users-${pulumi.getStack()}`, 'UserId', {
+  uniqueKeys: ['Email', 'UserName'],
 })
+
+const tableNames = [
+  authentications.mainTable,
+  ...authentications.uniqueKeyTables,
+  emailAuthentications.mainTable,
+  ...emailAuthentications.uniqueKeyTables,
+  users.mainTable,
+  ...users.uniqueKeyTables,
+].map(table => table.arn)
+
+export const policy = pulumi.all(tableNames).apply(
+  tables =>
+    new aws.iam.Policy('allowFullUsersDynamoAccess', {
+      description: 'Allow DynamoDB access to Users',
+      policy: JSON.stringify({
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: [
+              'dynamodb:PutItem',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:Query',
+              'dynamodb:UpdateItem',
+            ],
+            Resource: flatten(
+              tables.map(table => [`${table}`, `${table}/index/*`]),
+            ),
+          },
+        ],
+      }),
+    }),
+)
