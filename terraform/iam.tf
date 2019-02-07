@@ -49,12 +49,6 @@ resource "aws_iam_policy" "allow_read_from_source_video_s3_bucket" {
 ###################
 ### Lambda role ###
 ###################
-## Allow role to use DynamoDB tables ##
-resource "aws_iam_role_policy_attachment" "lambda_dynamo_users" {
-  policy_arn = "${module.users.full_access_iam_policy_arn}"
-  role       = "${aws_iam_role.api_lambda.name}"
-}
-
 ## Allow role to use S3 KMS key ##
 resource "aws_iam_role_policy_attachment" "lamba_s3_kms" {
   policy_arn = "${aws_iam_policy.allow_s3_kms_key_use.arn}"
