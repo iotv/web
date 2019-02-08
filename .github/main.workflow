@@ -33,7 +33,7 @@ action "Deploy Pulumi" {
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY"
   ]
-  uses = "pulumi/actions@master"
+  uses = "docker://pulumi/actions"
 }
 
 action "Deploy terraform" {
