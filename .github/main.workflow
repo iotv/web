@@ -1,6 +1,6 @@
 workflow "Build, test and deploy on push" {
   on = "push"
-  resolves = ["Deploy serverless", "Deploy Pulumi" "Invalidate cloudfront cache"]
+  resolves = ["Deploy serverless", "Deploy Pulumi", "Invalidate cloudfront cache"]
 }
 
 action "Install web dependencies" {
