@@ -23,7 +23,7 @@ action "Build graphql" {
 action "Deploy Pulumi" {
   args = ["up"]
   env = {
-    "PULUMI_CI" = "up"
+    PULUMI_CI = "up"
   }
   needs = ["Build web", "Build graphql"]
   secrets = [
@@ -31,7 +31,7 @@ action "Deploy Pulumi" {
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
   ]
-  uses = "pulumi/actions@master"
+  uses = "iotv/actions@master"
 }
 
 action "Deploy terraform" {
