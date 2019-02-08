@@ -1,3 +1,4 @@
 name: iotv
 runtime: nodejs
 description: the iotv monolith
+main: pulumi/
