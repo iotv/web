@@ -21,32 +21,29 @@ action "Build graphql" {
 }
 
 action "Deploy Pulumi" {
-  args = [ "up" ]
-
+  args = ["up"]
   env = {
     "PULUMI_CI" = "up"
   }
-
-  needs   = ["Build web", "Build graphql"]
+  needs = ["Build web", "Build graphql"]
   secrets = [
     "PULUMI_ACCESS_TOKEN",
     "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY"
+    "AWS_SECRET_ACCESS_KEY",
   ]
-  uses = "docker://pulumi/actions"
+  uses = "pulumi/actions@master"
 }
 
 action "Deploy terraform" {
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
-    TF_DYNAMODB_TABLE  = "iotv-terraform-locks"
-    TF_KMS_KEY_ARN     = "arn:aws:kms:us-east-1:291585690921:key/f22b80ef-e7e5-4f60-b430-d54c3f1a2c5a"
-    TF_S3_BUCKET       = "iotv-tf20180213040614675300000003"
+    TF_DYNAMODB_TABLE = "iotv-terraform-locks"
+    TF_KMS_KEY_ARN = "arn:aws:kms:us-east-1:291585690921:key/f22b80ef-e7e5-4f60-b430-d54c3f1a2c5a"
+    TF_S3_BUCKET = "iotv-tf20180213040614675300000003"
   }
-
-  needs   = ["Build web", "Build graphql"]
+  needs = ["Build web", "Build graphql"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
-  uses    = "./.github/actions/deploy-terraform"
+  uses = "./.github/actions/deploy-terraform"
 }
 
 action "Deploy web" {
@@ -54,30 +51,26 @@ action "Deploy web" {
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
-
-  needs   = ["Deploy terraform", "Deploy serverless"]
+  needs = ["Deploy terraform", "Deploy serverless"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
-  uses    = "actions/aws/cli@master"
+  uses = "actions/aws/cli@master"
 }
 
 action "Deploy serverless" {
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
-
-  needs   = ["Deploy terraform", "Install serverless dependencies"]
+  needs = ["Deploy terraform", "Install serverless dependencies"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
-  uses    = "./.github/actions/deploy-serverless"
+  uses = "./.github/actions/deploy-serverless"
 }
 
 action "Invalidate cloudfront cache" {
   args = "cloudfront create-invalidation --distribution-id `jq -r .web_distribution_id ./bin/.terraform-output` --paths '/*'"
-
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
-
-  needs   = ["Deploy web"]
+  needs = ["Deploy web"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
-  uses    = "actions/aws/cli@master"
+  uses = "actions/aws/cli@master"
 }
