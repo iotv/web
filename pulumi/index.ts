@@ -1,2 +1,1 @@
-import * as pulumi from '@pulumi/pulumi'
-export {policy} from './src/users'
+export {authentications, emailAuthentications, users} from './src/users'

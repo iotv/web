@@ -55,7 +55,7 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@pulumi/aws@latest":
+"@pulumi/aws@^0.16.7":
   version "0.16.7"
   resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-0.16.7.tgz#723d205bf2674aa26ef87a06cf50b9831353afd0"
   integrity sha512-RQV4XCgf3QnEJvrRfHkCZzGKJA3xuJrOdNTWIHLC4QTGH9tZOK5aLcP6yGPp7kKMm44bV08JnAPOooG+U4mi0w==
