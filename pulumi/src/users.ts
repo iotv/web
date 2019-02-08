@@ -8,11 +8,6 @@ type DynamoDBArgs = {
   globalSecondaryIndices?: string[]
 }
 
-type AutoScalingDynamoDBTableArgs = {
-  hashKey: string
-  globalSecondaryIndices?: string[]
-}
-
 class DynamoDB extends pulumi.ComponentResource {
   public readonly mainTable: pulumi.Output<AutoscalingDynamoDBTable>
   public readonly uniqueKeyTables: pulumi.Output<AutoscalingDynamoDBTable>[]
@@ -44,6 +39,7 @@ class DynamoDB extends pulumi.ComponentResource {
             new AutoscalingDynamoDBTable(
               `${mainTableName}${hashKey}UniqueIndex`,
               {hashKey},
+              {parent: this},
             ),
         ),
     )
@@ -92,14 +88,14 @@ class DynamoDB extends pulumi.ComponentResource {
   }
 }
 
+type AutoScalingDynamoDBTableArgs = {
+  hashKey: string
+  globalSecondaryIndices?: string[]
+}
+
 class AutoscalingDynamoDBTable extends pulumi.ComponentResource {
   public readonly table: aws.dynamodb.Table
-  public readonly appautoscalingPolicies: pulumi.Output<
-    aws.appautoscaling.Policy[]
-  >
-  public readonly appautoscalingTargets: pulumi.Output<
-    aws.appautoscaling.Target[]
-  >
+  public readonly autoscaling: pulumi.Output<DynamoDBAutoscaling>
 
   constructor(
     tableName: string,
@@ -130,83 +126,129 @@ class AutoscalingDynamoDBTable extends pulumi.ComponentResource {
       },
       {parent: this},
     )
-
-    const appautoscaling = this.table.name.apply(name =>
-      createAppautoscalingForTable(this.table, name),
-    )
-    this.appautoscalingTargets = appautoscaling.apply(appautoscaling =>
-      appautoscaling.map(it => it.target),
-    )
-    this.appautoscalingPolicies = appautoscaling.apply(appautoscaling =>
-      appautoscaling.map(it => it.policy),
+    this.autoscaling = this.table.name.apply(
+      tableName =>
+        new DynamoDBAutoscaling(
+          tableName,
+          {
+            ...DefaultDynamoDBAutoscalingArgs,
+            tableName,
+            globalSecondaryIndexNames: [
+              ...getOr([], 'globalSecondaryIndices', args)!,
+            ].map(name => `${name}Index`),
+          },
+          {parent: this},
+        ),
     )
 
     this.registerOutputs({
       table: this.table,
-      appautoscalingPolicies: this.appautoscalingPolicies,
-      appautoscalingTargets: this.appautoscalingTargets,
+      autoscaling: this.autoscaling,
     })
   }
 }
 
-function createAppautoscalingForTable(
-  parent: pulumi.Resource,
-  tableName: string,
-  globalSecondaryIndices?: string[],
-): {target: aws.appautoscaling.Target; policy: aws.appautoscaling.Policy}[] {
-  const resourceIds = [
-    `table/${tableName}`,
-    ...(globalSecondaryIndices
-      ? globalSecondaryIndices.map(
-          index => `table/${tableName}/index/${index}Index`,
-        )
-      : []),
-  ]
-  const params = [
-    {
-      scalableDimension: 'dynamodb:table:ReadCapacityUnits',
-      predefinedMetricType: 'DynamoDBReadCapacityUtilization',
-    },
-    {
-      scalableDimension: 'dynamodb:table:WriteCapacityUnits',
-      predefinedMetricType: 'DynamoDBWriteCapacityUtilization',
-    },
-  ]
-  return flatten(
-    resourceIds.map(resourceId =>
-      params.map(({scalableDimension, predefinedMetricType}) => {
-        const target = new aws.appautoscaling.Target(
-          `${resourceId}-${scalableDimension}`,
-          {
-            minCapacity: 1,
-            maxCapacity: 10,
-            resourceId,
-            scalableDimension,
-            serviceNamespace: 'dynamodb',
-          },
-          {parent},
-        )
-        const policy = new aws.appautoscaling.Policy(
-          `${resourceId}-${scalableDimension}`,
-          {
-            ...pick(
-              ['resourceId', 'scalableDimension', 'serviceNamespace'],
-              target,
-            ),
-            policyType: 'TargetTrackingScaling',
-            targetTrackingScalingPolicyConfiguration: {
-              predefinedMetricSpecification: {
-                predefinedMetricType,
+type DynamoDBAutoscalingArgs = {
+  minCapacity: number
+  maxCapacity: number
+  targetValue: number
+  tableName: string
+  globalSecondaryIndexNames?: string[]
+}
+const DefaultDynamoDBAutoscalingArgs = {
+  minCapacity: 1,
+  maxCapacity: 10,
+  targetValue: 70,
+}
+
+class DynamoDBAutoscaling extends pulumi.ComponentResource {
+  public readonly appautoscalingPolicies: aws.appautoscaling.Policy[]
+  public readonly appautoscalingTargets: aws.appautoscaling.Target[]
+
+  constructor(
+    name: string,
+    args: DynamoDBAutoscalingArgs,
+    opts?: pulumi.ResourceOptions,
+  ) {
+    super('iotv:DynamoDBAutoscaling', name, {}, opts)
+
+    const resources = [
+      {
+        resourceId: `table/${args.tableName}`,
+        scalableDimensionPrefix: 'dynamodb:table',
+      },
+      ...[...getOr([], 'globalSecondaryIndexNames', args)!].map(name => ({
+        resourceId: `table/${args.tableName}/index/${name}`,
+        scalableDimensionPrefix: 'dynamodb:index',
+      })),
+    ]
+    const params = [
+      {
+        scalableDimensionSuffix: ':ReadCapacityUnits',
+        predefinedMetricType: 'DynamoDBReadCapacityUtilization',
+      },
+      {
+        scalableDimensionSuffix: ':WriteCapacityUnits',
+        predefinedMetricType: 'DynamoDBWriteCapacityUtilization',
+      },
+    ]
+
+    const {targets, policies} = resources
+      .map(({resourceId, scalableDimensionPrefix}) =>
+        params
+          .map(({scalableDimensionSuffix, predefinedMetricType}) => ({
+            target: new aws.appautoscaling.Target(
+              `${resourceId}${scalableDimensionSuffix}`,
+              {
+                minCapacity: args.minCapacity,
+                maxCapacity: args.maxCapacity,
+                resourceId,
+                scalableDimension: `${scalableDimensionPrefix}${scalableDimensionSuffix}`,
+                serviceNamespace: 'dynamodb',
               },
-              targetValue: 70,
-            },
-          },
-          {parent},
-        )
-        return {target, policy}
-      }),
-    ),
-  )
+              {parent: this},
+            ),
+            policy: new aws.appautoscaling.Policy(
+              `${resourceId}${scalableDimensionSuffix}`,
+              {
+                resourceId,
+                scalableDimension: `${scalableDimensionPrefix}${scalableDimensionSuffix}`,
+                serviceNamespace: 'dynamodb',
+                policyType: 'TargetTrackingScaling',
+                targetTrackingScalingPolicyConfiguration: {
+                  predefinedMetricSpecification: {
+                    predefinedMetricType,
+                  },
+                  targetValue: args.targetValue,
+                },
+              },
+              {parent: this},
+            ),
+          }))
+          .reduce(
+            (acc, i) => ({
+              targets: [...acc.targets, i.target],
+              policies: [...acc.policies, i.policy],
+            }),
+            {targets: [], policies: []},
+          ),
+      )
+      .reduce(
+        (acc, i) => ({
+          targets: [...acc.targets, ...i.targets],
+          policies: [...acc.policies, ...i.policies],
+        }),
+        {targets: [], policies: []},
+      )
+
+    this.appautoscalingPolicies = policies
+    this.appautoscalingTargets = targets
+
+    this.registerOutputs({
+      appautoscalingPolicies: this.appautoscalingPolicies,
+      appautoscalingTargets: this.appautoscalingTargets,
+    })
+  }
 }
 
 export const authentications = new DynamoDB(

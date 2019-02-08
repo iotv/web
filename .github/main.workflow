@@ -1,6 +1,6 @@
 workflow "Build, test and deploy on push" {
   on = "push"
-  resolves = ["Deploy serverless", "Invalidate cloudfront cache"]
+  resolves = ["Deploy serverless", "Deploy Pulumi" "Invalidate cloudfront cache"]
 }
 
 action "Install web dependencies" {
@@ -18,6 +18,22 @@ action "Build web" {
 
 action "Build graphql" {
   uses = "./.github/actions/build-graphql"
+}
+
+action "Deploy Pulumi" {
+  args = [ "up" ]
+
+  env = {
+    "PULUMI_CI" = "up"
+  }
+
+  needs   = ["Build web", "Build graphql"]
+  secrets = [
+    "PULUMI_ACCESS_TOKEN",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY"
+  ]
+  uses = "pulumi/actions@master"
 }
 
 action "Deploy terraform" {
