@@ -27,7 +27,7 @@ action "Deploy Pulumi" {
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
   ]
-  uses = "./.github/deploy-pulumi"
+  uses = "./.github/actions/deploy-pulumi"
 }
 
 action "Deploy terraform" {
