@@ -3,7 +3,7 @@
 set -eu
 
 cd pulumi
-yarn --frozen-lockfile
+yarn install --frozen-lockfile
 pulumi --non-interactive \
     up \
         --supress-outputs \
