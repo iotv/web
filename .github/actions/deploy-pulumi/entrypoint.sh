@@ -6,6 +6,6 @@ cd pulumi
 yarn install --frozen-lockfile
 pulumi --non-interactive \
     up \
-        --supress-outputs \
+        --suppress-outputs \
         --skip-preview \
         --stack dev
