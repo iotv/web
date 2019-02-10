@@ -1,14 +1,10 @@
 workflow "Build, test and deploy on push" {
   on = "push"
-  resolves = ["Deploy serverless", "Deploy Pulumi", "Invalidate cloudfront cache"]
+  resolves = ["Deploy Pulumi", "Invalidate cloudfront cache"]
 }
 
 action "Install web dependencies" {
   uses = "./.github/actions/install-web-dependencies"
-}
-
-action "Install serverless dependencies" {
-  uses = "./.github/actions/install-serverless-dependencies"
 }
 
 action "Build web" {
@@ -47,18 +43,9 @@ action "Deploy web" {
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
-  needs = ["Deploy terraform", "Deploy serverless"]
+  needs = ["Deploy terraform"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
   uses = "actions/aws/cli@master"
-}
-
-action "Deploy serverless" {
-  env = {
-    AWS_DEFAULT_REGION = "us-east-1"
-  }
-  needs = ["Deploy terraform", "Install serverless dependencies"]
-  secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
-  uses = "./.github/actions/deploy-serverless"
 }
 
 action "Invalidate cloudfront cache" {

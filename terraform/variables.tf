@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "The AWS region for this provider"
-  type = "string"
-  default = "us-east-1"
+  type        = "string"
+  default     = "us-east-1"
 }
 
 variable "org_name" {
@@ -32,10 +32,4 @@ variable "stack_name" {
   description = "The name of your stack to use for this terraform module"
   type        = "string"
   default     = "terraform-iotv-api"
-}
-
-variable "ffmpeg_version" {
-  description = "The version of ffmpeg to download"
-  type        = "string"
-  default     = "4.0.3"
 }
