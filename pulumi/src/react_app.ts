@@ -6,7 +6,6 @@ import * as mime from 'mime'
 import * as fs from 'fs'
 import * as path from 'path'
 
-
 type ReactAppArgs = {
   path: string
   acmCertificateArn: string
@@ -31,7 +30,23 @@ class ReactApp extends pulumi.ComponentResource {
       {parent: this},
     )
 
-    // this.objects = this.bucket.bucket.apply(bucket => )
+    this.objects = this.bucket.bucket.apply(bucket =>
+      fs
+        .readdirSync(args.path)
+        .map(fileName => path.join(args.path, fileName))
+        .map(
+          filePath =>
+            new aws.s3.BucketObject(
+              filePath,
+              {
+                bucket,
+                source: new pulumi.asset.FileAsset(filePath),
+                contentType: mime.getType(filePath) || undefined,
+              },
+              {parent: this},
+            ),
+        ),
+    )
 
     this.distribution = pulumi
       .all([

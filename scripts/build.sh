@@ -3,6 +3,7 @@
 set -eu
 
 export GOOS="linux"
+export GOARCH="amd64"
 
 if [ ! -f bin/ffmpeg-64bit-static.tar.xz ]; then
     mkdir -p bin/layers/ffmpeg
