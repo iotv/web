@@ -1,5 +1,6 @@
 import * as pulumi from '@pulumi/pulumi'
 import * as aws from '@pulumi/aws'
+import {RestApi} from '@pulumi/aws/apigateway'
 
 type ServiceArgs = {
   description: string
@@ -13,37 +14,41 @@ type ServiceResourceMap = {
 type ServiceResourceConfig = {
   children?: ServiceResourceMap
   methods: {
-    DELETE?: {}
-    GET?: {}
-    HEAD?: {}
-    OPTIONS?: {}
-    PATCH?: {}
-    POST?: {}
-    PUT?: {}
+    DELETE?: ServiceResourceMethod
+    GET?: ServiceResourceMethod
+    HEAD?: ServiceResourceMethod
+    OPTIONS?: ServiceResourceMethod
+    PATCH?: ServiceResourceMethod
+    POST?: ServiceResourceMethod
+    PUT?: ServiceResourceMethod
   }
 }
 
+type ServiceResourceMethod = {
+  lambda: pulumi.Input<ServiceLambdaFunction>
+}
+
 class Service extends pulumi.ComponentResource {
-  public readonly apiGatwayRestApi: aws.apigateway.RestApi
+  public readonly apiGatewayRestApi: aws.apigateway.RestApi
   public readonly serviceResources: pulumi.Output<ServiceResource>[]
-  public readonly lambdaFunctions: aws.lambda.Function[]
+  public readonly apiGatewayDeployment: pulumi.Output<aws.apigateway.Deployment>
 
   constructor(name: string, args: ServiceArgs, opts?: pulumi.ResourceOptions) {
     super('iotv:Service', name, args, opts)
-    this.apiGatwayRestApi = new aws.apigateway.RestApi(
+    this.apiGatewayRestApi = new aws.apigateway.RestApi(
       `${name}`,
       {description: args.description},
       {parent: this},
     )
 
     this.serviceResources = Object.keys(args.resources).map(pathPart =>
-      this.apiGatwayRestApi.rootResourceId.apply(
+      this.apiGatewayRestApi.rootResourceId.apply(
         parentId =>
           new ServiceResource(
             `${name}${pathPart}`,
             {
               parentId,
-              restApi: this.apiGatwayRestApi,
+              restApi: this.apiGatewayRestApi,
               pathPart,
               config: args.resources[pathPart],
             },
@@ -52,9 +57,22 @@ class Service extends pulumi.ComponentResource {
       ),
     )
 
+    this.apiGatewayDeployment = pulumi.all(this.serviceResources).apply(
+      () =>
+        new aws.apigateway.Deployment(
+          name,
+          {
+            restApi: this.apiGatewayRestApi,
+            stageName: 'master',
+          },
+          {parent: this},
+        ),
+    )
+
     this.registerOutputs({
-      apiGatewayRestApi: this.apiGatwayRestApi,
+      apiGatewayRestApi: this.apiGatewayRestApi,
       serviceResources: this.serviceResources,
+      apiGatewayDeployment: this.apiGatewayDeployment,
     })
   }
 }
@@ -66,6 +84,7 @@ type ServiceResourceArgs = aws.apigateway.ResourceArgs & {
 
 class ServiceResource extends pulumi.ComponentResource {
   public readonly rootApiGatewayResource: aws.apigateway.Resource
+  public readonly methodIntegrations: ServiceMethodIntegration[]
   public readonly apiGatewayMethods: pulumi.Output<aws.apigateway.Method>[]
   public readonly childResources: pulumi.Output<ServiceResource>[]
 
@@ -81,26 +100,29 @@ class ServiceResource extends pulumi.ComponentResource {
       {parent: this},
     )
 
-    this.apiGatewayMethods = Object.keys(args.config.methods).map(httpMethod =>
-      this.rootApiGatewayResource.id.apply(
-        resourceId =>
-          new aws.apigateway.Method(
-            `${name}${httpMethod}`,
-            {
-              httpMethod,
-              restApi: args.restApi,
-              authorization: 'NONE',
-              resourceId,
-            },
-            {parent: this},
-          ),
-      ),
+    this.methodIntegrations = Object.keys(args.config.methods).map(
+      httpMethod =>
+        new ServiceMethodIntegration(
+          `${name}${httpMethod}`,
+          {
+            httpMethod,
+            lambda: args.config.methods[
+              <
+                'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT'
+              >httpMethod
+            ]!.lambda,
+            restApi: args.restApi,
+            resource: this.rootApiGatewayResource,
+          },
+          {parent: this},
+        ),
     )
 
     this.registerOutputs({
       rootApiGatewayResource: this.rootApiGatewayResource,
       apiGatewayMethods: this.apiGatewayMethods,
       childResources: this.childResources,
+      methodIntegrations: this.methodIntegrations,
     })
   }
 }
@@ -221,6 +243,113 @@ class ServiceLambdaFunction extends pulumi.ComponentResource {
   }
 }
 
+type ServiceMethodIntegrationArgs = {
+  httpMethod: pulumi.Input<string>
+  lambda: pulumi.Input<ServiceLambdaFunction>
+  restApi: pulumi.Input<aws.apigateway.RestApi>
+  resource: pulumi.Input<aws.apigateway.Resource>
+}
+
+class ServiceMethodIntegration extends pulumi.ComponentResource {
+  public readonly apiGatewayMethod: pulumi.Output<aws.apigateway.Method>
+  public readonly apiGatewayIntegration: pulumi.Output<
+    aws.apigateway.Integration
+  >
+  public readonly lambdaPermission: pulumi.Output<aws.lambda.Permission>
+
+  constructor(
+    name: string,
+    args: ServiceMethodIntegrationArgs,
+    opts?: pulumi.ResourceOptions,
+  ) {
+    super('iotv:ServiceMethodIntegration', name, args, opts)
+
+    this.apiGatewayMethod = pulumi
+      .all([
+        args.httpMethod,
+        args.restApi,
+        pulumi.output(args.resource).apply(resource => resource.id),
+      ])
+      .apply(
+        ([httpMethod, restApi, resourceId]) =>
+          new aws.apigateway.Method(
+            name,
+            {
+              httpMethod,
+              restApi,
+              authorization: 'NONE',
+              resourceId,
+            },
+            {parent: this},
+          ),
+      )
+
+    this.apiGatewayIntegration = pulumi
+      .all([
+        aws.getRegion(),
+        args.httpMethod,
+        args.restApi,
+        pulumi.output(args.resource).apply(resource => resource.id),
+        pulumi
+          .output(args.lambda)
+          .apply(lambda => lambda.lambdaFunction.apply(fn => fn.arn)),
+      ])
+      .apply(
+        ([{name: region}, httpMethod, restApi, resourceId, lambdaArn]) =>
+          new aws.apigateway.Integration(
+            name,
+            {
+              type: 'AWS_PROXY',
+              httpMethod,
+              integrationHttpMethod: 'POST',
+              restApi,
+              resourceId,
+              uri: `arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations`,
+            },
+            {parent: this},
+          ),
+      )
+
+    this.lambdaPermission = pulumi
+      .all([
+        aws.getRegion(),
+        aws.getCallerIdentity(),
+        pulumi.output(args.restApi).apply(restApi => restApi.id),
+        args.httpMethod,
+        pulumi.output(args.resource).apply(resource => resource.path),
+        pulumi
+          .output(args.lambda)
+          .apply(lambda => lambda.lambdaFunction.apply(fn => fn.arn)),
+      ])
+      .apply(
+        ([
+          {name: region},
+          {accountId},
+          restApiId,
+          httpMethod,
+          resourcePath,
+          lambdaArn,
+        ]) =>
+          new aws.lambda.Permission(
+            name,
+            {
+              action: 'lambda:InvokeFunction',
+              principal: 'apigateway.amazonaws.com',
+              function: lambdaArn,
+              sourceArn: `arn:aws:execute-api:${region}:${accountId}:${restApiId}/*/${httpMethod}${resourcePath}`,
+            },
+            {parent: this},
+          ),
+      )
+
+    this.registerOutputs({
+      apiGatewayMethod: this.apiGatewayMethod,
+      apiGatewayIntegration: this.apiGatewayIntegration,
+      lambdaPermission: this.lambdaPermission,
+    })
+  }
+}
+
 export const graphqlLambdaFunction = new ServiceLambdaFunction(
   `GraphQL-${pulumi.getStack()}`,
   {},
@@ -231,7 +360,9 @@ export const mainApiService = new Service(`MainApi-${pulumi.getStack()}`, {
   resources: {
     graphql: {
       methods: {
-        POST: {},
+        POST: {
+          lambda: graphqlLambdaFunction,
+        },
       },
     },
   },
