@@ -1,0 +1,19 @@
+overwrite: true
+schema: 'src/**/*.graphql'
+documents: null
+generates:
+  './src/generated/resolver-types.ts':
+    config:
+      mappers:
+        User: './types#User'
+        UserAuthContainer: './types#UserAuthContainer'
+    plugins:
+      - 'typescript-common'
+      - 'typescript-resolvers'
+  './src/generated/types.ts':
+    plugins:
+      - 'typescript-common'
+      - 'typescript-server'
+  './src/generated/graphql.schema.json':
+    plugins:
+      - 'introspection'

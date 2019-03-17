@@ -1,7 +1,11 @@
 {
-  "version": "0.0.1",
-  "license": "UNLICENSED",
   "devDependencies": {
+    "lerna": "^3.13.1",
     "prettier": "^1.16.4"
-  }
+  },
+  "name": "iotv",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
 }

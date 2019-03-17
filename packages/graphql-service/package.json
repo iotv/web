@@ -1,0 +1,31 @@
+{
+  "author": "David J Felix <felix.davidj@gmail.com>",
+  "dependencies": {
+    "apollo-server-lambda": "^2.4.8",
+    "graphql": "^14.1.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.23",
+    "@types/graphql": "^14.0.7",
+    "@types/jest": "^24.0.11",
+    "graphql-code-generator": "^0.18.0",
+    "graphql-codegen-introspection": "^0.18.0",
+    "graphql-codegen-typescript-common": "^0.18.0",
+    "graphql-codegen-typescript-resolvers": "^0.18.0",
+    "graphql-codegen-typescript-resolvers-template": "^0.18.0",
+    "graphql-codegen-typescript-server": "^0.18.0",
+    "jest": "^24.5.0",
+    "jest-haste-map": "^24.5.0",
+    "jest-resolve": "^24.5.0",
+    "typescript": "^3.3.3333"
+  },
+  "license": "UNLICENSED",
+  "main": "dist/index.js",
+  "name": "graphql-service",
+  "private": true,
+  "types": "dist/index.d.ts",
+  "version": "1.0.0",
+  "scripts": {
+    "generate": "gql-gen --config codegen.yml"
+  }
+}
