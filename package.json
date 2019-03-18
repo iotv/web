@@ -5,6 +5,11 @@
   },
   "name": "iotv",
   "private": true,
+  "scripts": {
+    "build": "yarn run lerna run build",
+    "generate": "yarn run lerna run generate",
+    "test": "yarn run lerna run test"
+  },
   "workspaces": [
     "packages/*"
   ]
