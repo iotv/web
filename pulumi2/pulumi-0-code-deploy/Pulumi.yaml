@@ -1,0 +1,3 @@
+name: pulumi-0-code-deploy
+runtime: nodejs
+description: A minimal AWS TypeScript Pulumi program

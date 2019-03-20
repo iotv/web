@@ -45,8 +45,10 @@ export class ServiceLambdaFunction extends pulumi.ComponentResource {
           {
             runtime: aws.lambda.NodeJS8d10Runtime,
             role,
-            handler: 'graphql',
-            code: new pulumi.asset.FileArchive('../bin/graphql.zip'),
+            handler: 'handler.handleGraphQL',
+            code: new pulumi.asset.FileArchive(
+              '../packages/graphql-service/dist/graphql.zip',
+            ),
             timeout: 5,
             memorySize: 1024,
           },
