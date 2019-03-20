@@ -1,22 +1,32 @@
 {
   "author": "David J Felix <felix.davidj@gmail.com>",
   "dependencies": {
-    "apollo-server-lambda": "^2.4.8",
+    "@types/graphql": "^14.0.7",
     "graphql": "^14.1.1"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^1.0.0",
+    "@graphql-codegen/typescript": "^1.0.0",
+    "@graphql-codegen/typescript-operations": "^1.0.0",
+    "@graphql-codegen/typescript-resolvers": "^1.0.0",
     "@types/aws-lambda": "^8.10.23",
-    "@types/graphql": "^14.0.7",
     "@types/jest": "^23.0.0",
-    "graphql-code-generator": "^0.18.0",
-    "graphql-codegen-introspection": "^0.18.0",
-    "graphql-codegen-typescript-common": "^0.18.0",
-    "graphql-codegen-typescript-resolvers": "^0.18.0",
-    "graphql-codegen-typescript-resolvers-template": "^0.18.0",
-    "graphql-codegen-typescript-server": "^0.18.0",
+    "@types/rollup-plugin-commonjs": "^9.2.0",
+    "@types/rollup-plugin-json": "^3.0.1",
+    "@types/rollup-plugin-node-builtins": "^2.1.1",
+    "@types/rollup-plugin-node-globals": "^1.4.0",
+    "@types/rollup-plugin-node-resolve": "^4.0.0",
     "jest": "^23.6.0",
     "jest-haste-map": "^23.6.0",
     "jest-resolve": "^23.6.0",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.6.0",
+    "rollup-plugin-commonjs": "^9.2.1",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-typescript2": "^0.20.1",
     "typescript": "^3.3.3333"
   },
   "license": "UNLICENSED",
@@ -26,6 +36,8 @@
   "types": "dist/index.d.ts",
   "version": "1.0.0",
   "scripts": {
-    "generate": "gql-gen --config codegen.yml"
+    "build": "rollup -c rollup.config.ts",
+    "generate": "gql-gen --config codegen.yml",
+    "prebuild": "rimraf dist"
   }
 }

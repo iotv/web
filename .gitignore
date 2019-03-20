@@ -14,8 +14,9 @@ vendor
 .idea/**
 
 node_modules/
-**/node_modules/**
 .DS_Store
 
 dist/
-**/dist/**
+.rpt2_cache/
+
+yarn-error.log
