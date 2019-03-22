@@ -1,18 +1,17 @@
 import React, {FunctionComponent, useState, SyntheticEvent} from 'react'
-import {
-  Check,
-  X,
-  TrendingUp,
-  TrendingDown,
-  Sun,
-  Moon,
-  Icon,
-} from 'react-feather'
+import {Icon} from 'react-feather'
 import {css} from '@emotion/core'
 
 export type ToggleProps = {
   CheckedIcon: Icon
+  checkedIconColor: string
+  checkedKnobClassNames: string
+  checkedTrackClassNames: string
+  knobClassNames: string
   UncheckedIcon: Icon
+  uncheckedIconColor: string
+  uncheckedKnobClassNames: string
+  uncheckedTrackClassNames: string
 }
 
 export const Toggle: FunctionComponent<ToggleProps> = props => {
@@ -47,8 +46,8 @@ export const Toggle: FunctionComponent<ToggleProps> = props => {
         `}
         className={`rounded-full p-0 w-12 h-6 border-solid border-2 ${
           isChecked
-            ? 'bg-green-500 border-green-700'
-            : 'bg-gray-500 border-gray-700'
+            ? props.checkedTrackClassNames
+            : props.uncheckedTrackClassNames
         }`}
       >
         {/* Toggle Track Check */}
@@ -64,7 +63,7 @@ export const Toggle: FunctionComponent<ToggleProps> = props => {
             isChecked ? 'visible' : 'invisible'
           }`}
         >
-          <props.CheckedIcon color="white" size="1rem" />
+          <props.CheckedIcon color={props.checkedIconColor} size="1rem" />
         </div>
         {/* Toggle Track X */}
         <div
@@ -79,7 +78,7 @@ export const Toggle: FunctionComponent<ToggleProps> = props => {
             isChecked ? 'invisible' : 'visible'
           }`}
         >
-          <props.UncheckedIcon color="#22292F" size="1rem" />
+          <props.UncheckedIcon color={props.uncheckedIconColor} size="1rem" />
         </div>
       </div>
       {/* Toggle Thumb Knob */}
@@ -91,9 +90,11 @@ export const Toggle: FunctionComponent<ToggleProps> = props => {
           ${isChecked ? 'left: 1.5rem;' : 'left: 0;'}
           transition: all 0.25s ease;
         `}
-        className={`border-solid border-2 ${
-          isChecked ? 'border-green-700' : 'border-gray-700'
-        } rounded-full absolute w-6 h-6 bg-gray-100 top-0`}
+        className={`border-solid border-2 rounded-full absolute w-6 h-6 top-0 ${props.knobClassNames +
+          ' ' +
+          (isChecked
+            ? props.checkedKnobClassNames
+            : props.uncheckedKnobClassNames)}`}
       />
       <input
         type="checkbox"

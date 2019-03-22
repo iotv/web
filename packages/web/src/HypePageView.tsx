@@ -1,10 +1,10 @@
 import React, {FunctionComponent} from 'react'
 import {css} from '@emotion/core'
+import {Check, X} from 'react-feather'
 
 import {HypeMainHeader} from './components/HypeMainHeader'
 import {HypeSubHeader} from './components/HypeSubHeader'
 import {Toggle} from './components/Toggle'
-import {Check, X} from 'react-feather'
 
 export const HypePageView: FunctionComponent = props => (
   <>
@@ -25,7 +25,17 @@ export const HypePageView: FunctionComponent = props => (
         margin: 50px;
       `}
     >
-      <Toggle CheckedIcon={Check} UncheckedIcon={X} />
+      <Toggle
+        checkedIconColor="#F0FFF4"
+        CheckedIcon={Check}
+        checkedKnobClassNames="border-green-700"
+        checkedTrackClassNames="bg-green-500 border-green-700"
+        knobClassNames="bg-gray-100"
+        uncheckedIconColor="#1A202C"
+        UncheckedIcon={X}
+        uncheckedKnobClassNames="border-gray-700"
+        uncheckedTrackClassNames="bg-gray-500 border-gray-700"
+      />
     </div>
   </>
 )
