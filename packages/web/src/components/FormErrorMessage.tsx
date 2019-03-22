@@ -6,7 +6,7 @@ export type Props = {
 }
 
 export const FormErrorMessage: FunctionComponent<Props> = props => (
-  <p className={'m-1 text-red text-xs italic'}>
+  <p className={'m-1 text-red-500 text-xs italic'}>
     <ErrorMessage name={props.name} />
   </p>
 )

@@ -23,9 +23,10 @@
     "react-apollo-hooks": "^0.2.1",
     "react-app-rewired": "^2.0.2",
     "react-dom": "16.8.0-alpha.0",
+    "react-feather": "^1.1.6",
     "react-scripts": "2.1.8",
     "react-testing-library": "^5.4.4",
-    "tailwindcss": "^0.7.3",
+    "tailwindcss": "^1.0.0-beta.3",
     "ts-jest": "^23.10.5",
     "typescript": "^3.2.2",
     "yup": "^0.26.10"

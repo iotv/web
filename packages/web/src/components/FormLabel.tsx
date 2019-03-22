@@ -5,7 +5,7 @@ export type Props = {
 }
 
 export const FormLabel: FunctionComponent<Partial<Props>> = props => (
-  <label className={'font-bold text-grey-darker block mb-2'}>
+  <label className={'font-bold text-grey-700 block mb-2'}>
     {props.children}
   </label>
 )
