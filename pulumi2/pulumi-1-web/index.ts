@@ -4,7 +4,21 @@ import * as aws from '@pulumi/aws'
 const config = new pulumi.Config('pulumi-1-web')
 const domainStack = new pulumi.StackReference(config.require('domainStack'))
 
-const bucket = new aws.s3.Bucket('Site')
+const bucket = new aws.s3.Bucket('Site', {
+  serverSideEncryptionConfiguration: {
+    rule: {
+      applyServerSideEncryptionByDefault: {
+        sseAlgorithm: 'AES256',
+      },
+    },
+  },
+  tags: {
+    Application: 'iotv',
+    Pulumi: 'true',
+    Repository: 'https://github.com/iotv/iotv',
+    Stack: 'pulumi-1-web',
+  },
+})
 
 const originAccessIdentity = new aws.cloudfront.OriginAccessIdentity('Site')
 
@@ -35,7 +49,7 @@ const cloudfrontDistribution = pulumi
   ])
   .apply(
     ([originAccessIdentity, domainName]) =>
-      new aws.cloudfront.Distribution('SIte', {
+      new aws.cloudfront.Distribution('Site', {
         aliases: [domainStack.getOutput('domainName')],
         customErrorResponses: [
           {
@@ -84,6 +98,12 @@ const cloudfrontDistribution = pulumi
           geoRestriction: {
             restrictionType: 'none',
           },
+        },
+        tags: {
+          Application: 'iotv',
+          Pulumi: 'true',
+          Repository: 'https://github.com/iotv/iotv',
+          Stack: 'pulumi-1-web',
         },
         viewerCertificate: {
           acmCertificateArn: domainStack.getOutput('certificateArn'),
