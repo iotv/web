@@ -78,5 +78,6 @@ const splatValidation = splatValidationRecord.apply(record =>
   ),
 )
 
+export const domainName = config.require('domainName')
 export const domainZoneId = zone.id
 export const certificateArn = certificate.arn
