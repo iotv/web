@@ -1,6 +1,6 @@
 import * as pulumi from '@pulumi/pulumi'
 
-import {DynamoDB} from '../../pulumi/src/kv-database/database'
+import {DynamoDB} from './src/kv-database/database'
 
 export const authentications = new DynamoDB(
   `Authentications-${pulumi.getStack()}`,
