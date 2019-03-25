@@ -1,8 +1,20 @@
-import * as pulumi from "@pulumi/pulumi";
-import * as aws from "@pulumi/aws";
+import * as pulumi from '@pulumi/pulumi'
 
-// Create an AWS resource (S3 Bucket)
-const bucket = new aws.s3.Bucket("my-bucket");
+import {DynamoDB} from '../../pulumi/src/kv-database/database'
 
-// Export the name of the bucket
-export const bucketName = bucket.id;
+export const authentications = new DynamoDB(
+  `Authentications-${pulumi.getStack()}`,
+  {
+    hashKey: 'AuthenticationId',
+    uniqueKeys: ['EmailAuthenticationId'],
+    globalSecondaryIndices: ['UserId'],
+  },
+)
+export const emailAuthentications = new DynamoDB(
+  `EmailAuthentications-${pulumi.getStack()}`,
+  {hashKey: 'EmailAuthenticationId', uniqueKeys: ['Email', 'UserId']},
+)
+export const users = new DynamoDB(`Users-${pulumi.getStack()}`, {
+  hashKey: 'UserId',
+  uniqueKeys: ['Email', 'UserName'],
+})

@@ -66,7 +66,9 @@ export class AutoscalingDynamoDBTable extends pulumi.ComponentResource {
 }
 
 class DynamoDBAutoscaling extends pulumi.ComponentResource {
-  public readonly appautoscalingPolicies: aws.appautoscaling.Policy[]
+  public readonly appautoscalingPolicies: pulumi.Output<
+    aws.appautoscaling.Policy
+  >[]
   public readonly appautoscalingTargets: aws.appautoscaling.Target[]
 
   constructor(
@@ -100,8 +102,8 @@ class DynamoDBAutoscaling extends pulumi.ComponentResource {
     const {targets, policies} = resources
       .map(({resourceId, scalableDimensionPrefix}) =>
         params
-          .map(({scalableDimensionSuffix, predefinedMetricType}) => ({
-            target: new aws.appautoscaling.Target(
+          .map(({scalableDimensionSuffix, predefinedMetricType}) => {
+            const target = new aws.appautoscaling.Target(
               `${resourceId}${scalableDimensionSuffix}`,
               {
                 minCapacity: args.minCapacity,
@@ -111,24 +113,28 @@ class DynamoDBAutoscaling extends pulumi.ComponentResource {
                 serviceNamespace: 'dynamodb',
               },
               {parent: this},
-            ),
-            policy: new aws.appautoscaling.Policy(
-              `${resourceId}${scalableDimensionSuffix}`,
-              {
-                resourceId,
-                scalableDimension: `${scalableDimensionPrefix}${scalableDimensionSuffix}`,
-                serviceNamespace: 'dynamodb',
-                policyType: 'TargetTrackingScaling',
-                targetTrackingScalingPolicyConfiguration: {
-                  predefinedMetricSpecification: {
-                    predefinedMetricType,
+            )
+            const policy = target.id.apply(
+              () =>
+                new aws.appautoscaling.Policy(
+                  `${resourceId}${scalableDimensionSuffix}`,
+                  {
+                    resourceId,
+                    scalableDimension: `${scalableDimensionPrefix}${scalableDimensionSuffix}`,
+                    serviceNamespace: 'dynamodb',
+                    policyType: 'TargetTrackingScaling',
+                    targetTrackingScalingPolicyConfiguration: {
+                      predefinedMetricSpecification: {
+                        predefinedMetricType,
+                      },
+                      targetValue: args.targetValue,
+                    },
                   },
-                  targetValue: args.targetValue,
-                },
-              },
-              {parent: this},
-            ),
-          }))
+                  {parent: this},
+                ),
+            )
+            return {target, policy}
+          })
           .reduce(
             (acc, i) => ({
               targets: [...acc.targets, i.target],
