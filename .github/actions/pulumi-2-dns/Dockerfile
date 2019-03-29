@@ -1,8 +1,8 @@
-FROM hashicorp/terraform
+FROM davidjfelix/pulumi
 
-LABEL "com.github.actions.name"="Deploy terraform"
-LABEL "com.github.actions.description"="Deploy the terraform stack"
-LABEL "com.github.actions.icon"="server"
+LABEL "com.github.actions.name"="Deploy Pulumi 2 DNS"
+LABEL "com.github.actions.description"="Deploy Pulumi 2 DNS"
+LABEL "com.github.actions.icon"="cloud-lightning"
 LABEL "com.github.actions.color"="purple"
 
 LABEL "repository"="https://github.com/iotv/iotv"

@@ -1,7 +1,7 @@
 FROM davidjfelix/pulumi
 
-LABEL "com.github.actions.name"="Deploy pulumi"
-LABEL "com.github.actions.description"="Deploy Pulumi stack"
+LABEL "com.github.actions.name"="Deploy Pulumi 1 Web"
+LABEL "com.github.actions.description"="Deploy Pulumi 1 Web"
 LABEL "com.github.actions.icon"="cloud-lightning"
 LABEL "com.github.actions.color"="purple"
 

@@ -1,51 +1,93 @@
 workflow "Build, test and deploy on push" {
   on = "push"
-  resolves = ["Deploy Pulumi", "Invalidate cloudfront cache"]
+  resolves = ["Pulumi 2 DNS", "Invalidate Cloudfront Cache"]
 }
 
-action "Install web dependencies" {
-  uses = "./.github/actions/install-web-dependencies"
+# Level 0
+action "Install Dependencies" {
+  uses = "docker://node"
+  runs = ["yarn"]
+  args = ["install", "--frozen-lockfile"]  
 }
 
-action "Build web" {
-  needs = ["Install web dependencies"]
-  uses = "./.github/actions/build-web"
-}
-
-action "Build graphql" {
-  uses = "./.github/actions/build-graphql"
-}
-
-action "Deploy Pulumi" {
-  needs = ["Build web", "Build graphql"]
+action "Pulumi 0 Code Deploy" {
   secrets = [
     "PULUMI_ACCESS_TOKEN",
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
   ]
-  uses = "./.github/actions/deploy-pulumi"
+  uses = "./.github/actions/pulumi-0-code-deploy"
 }
 
-action "Deploy terraform" {
-  env = {
-    AWS_DEFAULT_REGION = "us-east-1"
-    TF_DYNAMODB_TABLE = "iotv-terraform-locks"
-    TF_KMS_KEY_ARN = "arn:aws:kms:us-east-1:291585690921:key/f22b80ef-e7e5-4f60-b430-d54c3f1a2c5a"
-    TF_S3_BUCKET = "iotv-tf20180213040614675300000003"
-  }
-  needs = ["Build web", "Build graphql"]
-  secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
-  uses = "./.github/actions/deploy-terraform"
+action "Pulumi 0 Domain" {
+  secrets = [
+    "PULUMI_ACCESS_TOKEN",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+  ]
+  uses = "./.github/actions/pulumi-0-domain"
 }
 
-action "Deploy web" {
+action "Pulumi 0 User DB" {
+  secrets = [
+    "PULUMI_ACCESS_TOKEN",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+  ]
+  uses = "./.github/actions/pulumi-0-user-db"
+}
+
+# Level 1
+action "Test" {
+  needs = ["Install Dependencies"]
+  uses = "./.github/actions/test"
+}
+
+action "Build" {
+  needs = ["Install Dependencies"]
+  uses = "./.github/actions/build"
+}
+
+action "Pulumi 1 Web" {
+  needs = ["Pulumi 0 Domain"]
+  secrets = [
+    "PULUMI_ACCESS_TOKEN",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+  ]
+  uses = "./.github/actions/pulumi-1-web"
+}
+
+# Level 2
+action "Deploy Web" {
   args = "s3 sync web/build s3://`jq -r .web_bucket_id ./bin/.terraform-output`"
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
-  needs = ["Deploy terraform"]
+  needs = ["Build", "Pulumi 1 Web", "Test"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
   uses = "actions/aws/cli@master"
+}
+
+action "Deploy API" {
+  args = "s3 sync web/build s3://`jq -r .web_bucket_id ./bin/.terraform-output`"
+  env = {
+    AWS_DEFAULT_REGION = "us-east-1"
+  }
+  needs = ["Build", "Pulumi 0 Code Deploy", "Pulumi 0 User DB", "Test"]
+  secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
+  uses = "./.github/actions/deploy-api"
+}
+
+# Level 3
+action "Pulumi 1 GraphQL Service" {
+  needs = ["Deploy API"]
+  secrets = [
+    "PULUMI_ACCESS_TOKEN",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+  ]
+  uses = "./.github/actions/pulumi-1-graphql-service"
 }
 
 action "Invalidate cloudfront cache" {
@@ -53,7 +95,18 @@ action "Invalidate cloudfront cache" {
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
-  needs = ["Deploy web"]
+  needs = ["Deploy Web"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
   uses = "actions/aws/cli@master"
+}
+
+# Level 4
+action "Pulumi 2 DNS" {
+  needs = ["Pulumi 0 Domain", "Pulumi 1 GraphQL Service", "Pulumi 1 Web"]
+  secrets = [
+    "PULUMI_ACCESS_TOKEN",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+  ]
+  uses = "./.github/actions/pulumi-2-dns"
 }

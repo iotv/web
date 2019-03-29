@@ -1,4 +1,5 @@
 config:
   aws:region: us-east-1
+  pulumi-2-dns:apiStack: davidjfelix/pulumi-1-graphql-service/dev
   pulumi-2-dns:domainStack: davidjfelix/pulumi-0-domain/dev
   pulumi-2-dns:webStack: davidjfelix/pulumi-1-web/dev
