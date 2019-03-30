@@ -13,7 +13,7 @@ LABEL com.github.actions.color="yellow"
 
 ENV DOCKERVERSION=18.06.1-ce
 RUN apt-get update && \
-  apt-get install -y --no-install-recommends curl groff jq && \
+  apt-get install -y --no-install-recommends curl groff jq zip && \
   apt-get -y clean && apt-get -y autoclean && apt-get -y autoremove && \
   curl -fsSLO https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.3.0/heptio-authenticator-aws_0.3.0_linux_amd64 && \
   mv heptio-authenticator-aws_0.3.0_linux_amd64 /usr/local/bin/aws-iam-authenticator && \
