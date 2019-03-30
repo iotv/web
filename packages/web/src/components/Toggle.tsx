@@ -99,6 +99,7 @@ export const Toggle: FunctionComponent<ToggleProps> = props => {
       <input
         type="checkbox"
         checked={isChecked}
+        readOnly
         css={css`
           clip-path: inset(0 0);
         `}
