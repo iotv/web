@@ -64,7 +64,7 @@ action "Pulumi 1 Web" {
 
 # Level 2
 action "Deploy Web" {
-  args = "s3 sync web/build s3://`jq -r .bucketName ../../pulumi/pulumi-1-web/dist/output.json`"
+  args = "s3 sync ./packages/web/build s3://`jq -r .bucketName ./pulumi/pulumi-1-web/dist/output.json`"
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
@@ -94,7 +94,7 @@ action "Pulumi 1 GraphQL Service" {
 }
 
 action "Invalidate Cloudfront Cache" {
-  args = "cloudfront create-invalidation --distribution-id ``jq -r .distributionId ../../pulumi/pulumi-1-web/dist/output.json`` --paths '/*'"
+  args = "cloudfront create-invalidation --distribution-id ``jq -r .distributionId ./pulumi/pulumi-1-web/dist/output.json`` --paths '/*'"
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
