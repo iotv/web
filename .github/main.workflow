@@ -39,13 +39,17 @@ action "Pulumi 0 User DB" {
 
 # Level 1
 action "Test" {
+  args = ["test"]
   needs = ["Install Dependencies"]
-  uses = "./.github/actions/test"
+  runs = ["yarn"]
+  uses = "docker://node"
 }
 
 action "Build" {
+  args = ["build"]
   needs = ["Install Dependencies"]
-  uses = "./.github/actions/build"
+  runs = ["yarn"]
+  uses = "docker://node"
 }
 
 action "Pulumi 1 Web" {
@@ -90,7 +94,7 @@ action "Pulumi 1 GraphQL Service" {
   uses = "./.github/actions/pulumi-1-graphql-service"
 }
 
-action "Invalidate cloudfront cache" {
+action "Invalidate Cloudfront Cache" {
   args = "cloudfront create-invalidation --distribution-id `jq -r .web_distribution_id ./bin/.terraform-output` --paths '/*'"
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
