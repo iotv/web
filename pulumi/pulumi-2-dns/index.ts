@@ -78,4 +78,5 @@ const basePathMapping = new aws.apigateway.BasePathMapping('GraphQLMapping', {
     .getOutput('domainName')
     .apply(domainName => `api.${domainName}`),
   restApi: apiStack.getOutput('restApiId'),
+  stageName: 'master',
 })
