@@ -116,6 +116,9 @@ export const bucketName = bucket.id
 export const distributionDomainName = cloudfrontDistribution.apply(
   distribution => distribution.domainName,
 )
+export const distributionId = cloudfrontDistribution.apply(
+  distribution => distribution.id,
+)
 export const distributionHostedZoneId = cloudfrontDistribution.apply(
   distribution => distribution.hostedZoneId,
 )
