@@ -94,7 +94,7 @@ action "Pulumi 1 GraphQL Service" {
 }
 
 action "Invalidate Cloudfront Cache" {
-  args = "cloudfront create-invalidation --distribution-id ``jq -r .distributionId ./pulumi/pulumi-1-web/dist/output.json`` --paths '/*'"
+  args = "cloudfront create-invalidation --distribution-id `jq -r .distributionId ./pulumi/pulumi-1-web/dist/output.json` --paths '/*'"
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
