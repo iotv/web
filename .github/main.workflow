@@ -74,7 +74,6 @@ action "Deploy Web" {
 }
 
 action "Deploy API" {
-  args = "s3 sync web/build s3://`jq -r .web_bucket_id ./bin/.terraform-output`"
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }

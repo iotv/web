@@ -5,6 +5,7 @@ set -eu
 cd pulumi/pulumi-1-graphql-service
 mkdir dist
 yarn install --frozen-lockfile
+pulumi config set graphql graphql/graphql.${GITHUB_SHA}.zip
 pulumi --non-interactive \
     up \
         --suppress-outputs \
