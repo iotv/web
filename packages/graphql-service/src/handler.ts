@@ -38,9 +38,7 @@ const mutationFields: GraphQLFieldConfigMap<any, any> = {
     },
     resolve: async (root, {email}) =>
       new Promise(resolve => {
-        setTimeout(() => {
-          resolve(true)
-        }, 1000)
+        resolve(true)
       }),
     type: GraphQLBoolean,
   },
