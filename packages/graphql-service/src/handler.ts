@@ -77,6 +77,7 @@ export async function handleCorsPreflight(
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'OPTIONS, POST',
+      'Access-Control-Allow-Headers': 'authorization, content-type',
     },
   }
 }
@@ -104,6 +105,7 @@ export async function handleGraphQL(
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'OPTIONS, POST',
+      'Access-Control-Allow-Headers': 'authorization, content-type',
     },
   }
 }
