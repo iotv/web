@@ -13,6 +13,7 @@ export class HttpServiceResource extends pulumi.ComponentResource {
   public readonly rootApiGatewayResource: aws.apigateway.Resource
   public readonly methodIntegrations: HttpServiceMethodIntegration[]
   public readonly childResources: pulumi.Output<HttpServiceResource>[]
+  public readonly deployment: pulumi.Output<aws.apigateway.Deployment>
 
   constructor(
     name: string,
@@ -43,6 +44,19 @@ export class HttpServiceResource extends pulumi.ComponentResource {
           {parent: this},
         ),
     )
+
+    const deployment = pulumi
+      .all([
+        pulumi.output(this.rootApiGatewayResource),
+        pulumi.output(this.methodIntegrations),
+      ])
+      .apply(
+        () =>
+          new aws.apigateway.Deployment(name, {
+            restApi: args.restApi,
+            stageName: 'master',
+          }),
+      )
 
     this.registerOutputs({
       rootApiGatewayResource: this.rootApiGatewayResource,
