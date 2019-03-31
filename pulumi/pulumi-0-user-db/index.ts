@@ -10,6 +10,16 @@ export const authentications = new DynamoDB(
     globalSecondaryIndices: ['UserId'],
   },
 )
+
+export const betaApplications = new DynamoDB(
+  `BetaApplications-${pulumi.getStack()}`,
+  {hashKey: 'Email'},
+)
+
+export const betaInvites = new DynamoDB(`BetaInvites-${pulumi.getStack()}`, {
+  hashKey: 'Email',
+})
+
 export const emailAuthentications = new DynamoDB(
   `EmailAuthentications-${pulumi.getStack()}`,
   {hashKey: 'EmailAuthenticationId', uniqueKeys: ['Email', 'UserId']},

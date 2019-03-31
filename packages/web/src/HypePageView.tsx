@@ -8,6 +8,11 @@ import {Toggle} from './components/Toggle'
 
 export const HypePageView: FunctionComponent = props => (
   <>
+    <div className={'bg-gray-800 h-12'}>
+      <span className={'text-gray-300 text-3xl m-2 font-mono italic'}>
+        iotv
+      </span>
+    </div>
     <div className={'bg-gray-900 flex flex-row justify-around'}>
       <div className={'flex flex-col flex-grow items-center max-w-md'}>
         <HypeMainHeader className={'text-center'}>

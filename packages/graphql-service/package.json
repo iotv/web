@@ -2,7 +2,7 @@
   "author": "David J Felix <felix.davidj@gmail.com>",
   "dependencies": {
     "@types/graphql": "^14.0.7",
-    "graphql": "^14.1.1",
+    "graphql": "^14.2.0",
     "webpack": "^4.29.6"
   },
   "devDependencies": {

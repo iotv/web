@@ -1,18 +1,67 @@
-import {graphql, GraphQLSchema, GraphQLObjectType} from 'graphql'
+import {
+  graphql,
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLFieldConfigMap,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLID,
+  GraphQLBoolean,
+} from 'graphql'
 import {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
 
+const userType = new GraphQLObjectType({
+  name: 'User',
+  fields: {
+    id: {
+      type: GraphQLNonNull(GraphQLID),
+    },
+  },
+})
+
+const queryFields: GraphQLFieldConfigMap<any, any> = {
+  User: {
+    type: userType,
+    resolve: () => ({
+      id: 'hola',
+    }),
+  },
+}
+
+const mutationFields: GraphQLFieldConfigMap<any, any> = {
+  applyForBeta: {
+    args: {
+      email: {
+        description: 'email with which to apply for beta.',
+        type: GraphQLNonNull(GraphQLString),
+      },
+    },
+    resolve: async (root, {email}) =>
+      new Promise(resolve => {
+        setTimeout(() => {
+          resolve(true)
+        }, 1000)
+      }),
+    type: GraphQLBoolean,
+  },
+}
+
 export async function handleGraphQL(
-  event: APIGatewayProxyEvent,
-  context: Context,
+  event: Partial<APIGatewayProxyEvent>,
+  context: Partial<Context>,
 ): Promise<APIGatewayProxyResult> {
-  const result = graphql({
+  const result = await graphql({
     schema: new GraphQLSchema({
       query: new GraphQLObjectType({
         name: 'RootQueryType',
-        fields: {},
+        fields: queryFields,
+      }),
+      mutation: new GraphQLObjectType({
+        name: 'RootMutationType',
+        fields: mutationFields,
       }),
     }),
-    source: '',
+    source: 'mutation {applyForBeta(email:"ay")}',
   })
   return {
     statusCode: 200,

@@ -20,3 +20,5 @@ dist/
 .rpt2_cache/
 
 yarn-error.log
+coverage/
+
