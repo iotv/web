@@ -10,6 +10,7 @@ import {
   GraphQLBoolean,
 } from 'graphql'
 import {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
+import * as Yup from 'yup'
 
 const userType = new GraphQLObjectType({
   name: 'User',
@@ -38,7 +39,10 @@ const mutationFields: GraphQLFieldConfigMap<any, any> = {
       },
     },
     resolve: async (root, {email}) => {
-      const db = new DynamoDB()
+      const db = new DynamoDB({region: 'us-east-1'})
+      await Yup.string()
+        .email()
+        .validate(email)
       await db
         .transactWriteItems({
           TransactItems: [
@@ -54,6 +58,7 @@ const mutationFields: GraphQLFieldConfigMap<any, any> = {
           ],
         })
         .promise()
+      // FIXME: handle cases when it doesn't work
       return true
     },
     type: GraphQLBoolean,
@@ -75,7 +80,7 @@ export async function handleGraphQL(
         fields: mutationFields,
       }),
     }),
-    source: 'mutation {applyForBeta(email:"ay")}',
+    source: JSON.parse(event.body).query,
   })
   return {
     statusCode: 200,

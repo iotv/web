@@ -3,9 +3,11 @@
   "dependencies": {
     "@types/aws-sdk": "^2.7.0",
     "@types/graphql": "^14.0.7",
+    "@types/yup": "^0.26.12",
     "aws-sdk": "^2.432.0",
     "graphql": "^14.2.0",
-    "webpack": "^4.29.6"
+    "webpack": "^4.29.6",
+    "yup": "^0.27.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.0.0",
