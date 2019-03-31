@@ -1,7 +1,9 @@
 {
   "author": "David J Felix <felix.davidj@gmail.com>",
   "dependencies": {
+    "@types/aws-sdk": "^2.7.0",
     "@types/graphql": "^14.0.7",
+    "aws-sdk": "^2.432.0",
     "graphql": "^14.2.0",
     "webpack": "^4.29.6"
   },

@@ -1,3 +1,4 @@
+import {DynamoDB} from 'aws-sdk'
 import {
   graphql,
   GraphQLSchema,
@@ -36,10 +37,25 @@ const mutationFields: GraphQLFieldConfigMap<any, any> = {
         type: GraphQLNonNull(GraphQLString),
       },
     },
-    resolve: async (root, {email}) =>
-      new Promise(resolve => {
-        resolve(true)
-      }),
+    resolve: async (root, {email}) => {
+      const db = new DynamoDB()
+      await db
+        .transactWriteItems({
+          TransactItems: [
+            {
+              Put: {
+                ConditionExpression: 'attribute_not_exists(Email)',
+                Item: {
+                  Email: {S: email},
+                },
+                TableName: 'BetaApplications-dev-ee01dc8',
+              },
+            },
+          ],
+        })
+        .promise()
+      return true
+    },
     type: GraphQLBoolean,
   },
 }
