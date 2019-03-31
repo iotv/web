@@ -80,6 +80,7 @@ export async function handleCorsPreflight(
       'Access-Control-Allow-Headers': [
         ...Object.keys(event.headers),
         'content-type',
+        'x-apollo-tracing',
       ].join(','),
     },
   }
@@ -111,6 +112,7 @@ export async function handleGraphQL(
       'Access-Control-Allow-Headers': [
         ...Object.keys(event.headers),
         'content-type',
+        'x-apollo-tracing',
       ].join(','),
     },
   }
