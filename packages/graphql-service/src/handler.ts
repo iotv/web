@@ -85,5 +85,9 @@ export async function handleGraphQL(
   return {
     statusCode: 200,
     body: JSON.stringify(result),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST',
+    },
   }
 }
