@@ -77,7 +77,7 @@ export async function handleCorsPreflight(
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'OPTIONS, POST',
-      'Access-Control-Allow-Headers': 'authorization, content-type',
+      'Access-Control-Allow-Headers': Object.keys(event.headers).join(','),
     },
   }
 }
