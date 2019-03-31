@@ -1,4 +1,4 @@
-import {DynamoDB} from 'aws-sdk'
+import {config, DynamoDB} from 'aws-sdk'
 import {
   graphql,
   GraphQLSchema,
@@ -11,6 +11,8 @@ import {
 } from 'graphql'
 import {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
 import * as Yup from 'yup'
+
+config.update({region: 'us-east-1'})
 
 const userType = new GraphQLObjectType({
   name: 'User',
@@ -39,7 +41,7 @@ const mutationFields: GraphQLFieldConfigMap<any, any> = {
       },
     },
     resolve: async (root, {email}) => {
-      const db = new DynamoDB({region: 'us-east-1'})
+      const db = new DynamoDB()
       await Yup.string()
         .email()
         .validate(email)
@@ -65,6 +67,20 @@ const mutationFields: GraphQLFieldConfigMap<any, any> = {
   },
 }
 
+export async function handleCorsPreflight(
+  event: Partial<APIGatewayProxyEvent>,
+  context: Partial<Context>,
+): Promise<APIGatewayProxyResult> {
+  return {
+    statusCode: 200,
+    body: '',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'OPTIONS, POST',
+    },
+  }
+}
+
 export async function handleGraphQL(
   event: Partial<APIGatewayProxyEvent>,
   context: Partial<Context>,
@@ -87,7 +103,7 @@ export async function handleGraphQL(
     body: JSON.stringify(result),
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST',
+      'Access-Control-Allow-Methods': 'OPTIONS, POST',
     },
   }
 }

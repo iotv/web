@@ -1,10 +1,11 @@
 import * as pulumi from '@pulumi/pulumi'
 import * as aws from '@pulumi/aws'
 
-const config = new pulumi.Config('pulumi-1-graphql-service')
-const domainStack = new pulumi.StackReference(config.require('codeDeployStack'))
-
-type ServiceLambdaFunctionArgs = {}
+type ServiceLambdaFunctionArgs = {
+  s3Bucket: pulumi.Input<string>
+  s3Key: pulumi.Input<string>
+  handler: pulumi.Input<string>
+}
 
 export class ServiceLambdaFunction extends pulumi.ComponentResource {
   public readonly iamRole: aws.iam.Role
@@ -48,9 +49,9 @@ export class ServiceLambdaFunction extends pulumi.ComponentResource {
           {
             runtime: aws.lambda.NodeJS8d10Runtime,
             role,
-            handler: 'main.handleGraphQL',
-            s3Bucket: domainStack.getOutput('bucketName'),
-            s3Key: config.require('graphql'),
+            handler: args.handler,
+            s3Bucket: args.s3Bucket,
+            s3Key: args.s3Key,
             timeout: 5,
             memorySize: 1024,
           },
