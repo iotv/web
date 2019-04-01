@@ -6,6 +6,7 @@ type Props = {
   name: string
   onBlur: (e: any) => void
   onChange: (e: ChangeEvent<any>) => void
+  placeholder: string
   type: 'email' | 'password' | 'text' // Add more as needed
   value: any
 }
@@ -26,6 +27,7 @@ export const Input: FunctionComponent<Partial<Props>> = props => (
     name={props.name}
     onBlur={props.onBlur}
     onChange={props.onChange}
+    placeholder={props.placeholder}
     type={props.type || 'text'}
     value={props.value}
   />

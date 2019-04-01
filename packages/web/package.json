@@ -20,7 +20,7 @@
     "graphql-tag.macro": "^2.1.0",
     "lodash": "^4.17.11",
     "react": "16.8.0-alpha.0",
-    "react-apollo-hooks": "^0.2.1",
+    "react-apollo-hooks": "^0.4.4",
     "react-app-rewired": "^2.0.2",
     "react-dom": "16.8.0-alpha.0",
     "react-feather": "^1.1.6",

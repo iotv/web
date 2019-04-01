@@ -1,46 +1,76 @@
 import React, {FunctionComponent} from 'react'
-import {css} from '@emotion/core'
-import {Check, X} from 'react-feather'
 
 import {HypeMainHeader} from './components/HypeMainHeader'
 import {HypeSubHeader} from './components/HypeSubHeader'
-import {Toggle} from './components/Toggle'
+import {useMutation} from 'react-apollo-hooks'
+import gql from 'graphql-tag'
+import {Input, getFormikClassName} from './components/Input'
+import {Button} from './components/Button'
+import {Formik, Form, Field, FieldProps} from 'formik'
+import * as Yup from 'yup'
 
-export const HypePageView: FunctionComponent = props => (
-  <>
-    <div className={'bg-gray-800 h-12'}>
-      <span className={'text-gray-300 text-3xl m-2 font-mono italic'}>
-        iotv
-      </span>
-    </div>
-    <div className={'bg-gray-900 flex flex-row justify-around'}>
-      <div className={'flex flex-col flex-grow items-center max-w-md'}>
-        <HypeMainHeader className={'text-center'}>
-          A Collaborative Video Community
-        </HypeMainHeader>
-        <HypeSubHeader className={'text-center'}>
-          Stream, edit, remix, and collaborate all in one open, social, video
-          platform. iotv provides creators and viewers with the tools to
-          develop, interact with, and enjoy video content.
-        </HypeSubHeader>
+const APPLY_FOR_BETA = gql`
+  mutation applyForBeta($email: String!) {
+    applyForBeta(email: $email)
+  }
+`
+
+const betaSignupSchema = Yup.object().shape({
+  email: Yup.string()
+    .email('Invalid email address')
+    .required('Required'),
+})
+
+export const HypePageView: FunctionComponent = props => {
+  const applyForBeta = useMutation(APPLY_FOR_BETA)
+  return (
+    <div className={'flex flex-col min-h-screen'}>
+      <div className={'bg-gray-800 h-12'}>
+        <span
+          className={
+            'text-gray-300 text-3xl m-3 font-mono font-extrabold italic'
+          }
+        >
+          iotv
+        </span>
+      </div>
+      <div
+        className={
+          'bg-gray-900 flex flex-grow flex-col items-center justify-around'
+        }
+      >
+        <div className={'flex flex-col items-center content-center max-w-md'}>
+          <HypeMainHeader className={'text-center'}>
+            Video By You
+          </HypeMainHeader>
+          <HypeSubHeader className={'text-center'}>
+            Stream. Edit. Remix. Collab.
+          </HypeSubHeader>
+          <Formik
+            initialValues={{email: ''}}
+            validationSchema={betaSignupSchema}
+            onSubmit={({email}, {setSubmitting, setError}) => {
+              applyForBeta({variables: {email}})
+            }}
+          >
+            {({isSubmitting}) => (
+              <Form>
+                <Field name="email">
+                  {(props: FieldProps) => (
+                    <Input
+                      className={`${getFormikClassName(props)} mb-4 mt-4`}
+                      {...props.field}
+                      placeholder="Email"
+                      type="email"
+                    />
+                  )}
+                </Field>
+                <Button>Sign up for the beta</Button>
+              </Form>
+            )}
+          </Formik>
+        </div>
       </div>
     </div>
-    <div
-      css={css`
-        margin: 50px;
-      `}
-    >
-      <Toggle
-        checkedIconColor="#F0FFF4"
-        CheckedIcon={Check}
-        checkedKnobClassNames="border-green-700"
-        checkedTrackClassNames="bg-green-500 border-green-700"
-        knobClassNames="bg-gray-100"
-        uncheckedIconColor="#1A202C"
-        UncheckedIcon={X}
-        uncheckedKnobClassNames="border-gray-700"
-        uncheckedTrackClassNames="bg-gray-500 border-gray-700"
-      />
-    </div>
-  </>
-)
+  )
+}

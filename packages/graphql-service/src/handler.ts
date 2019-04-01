@@ -93,15 +93,16 @@ export async function handleGraphQL(
   const result = await graphql({
     schema: new GraphQLSchema({
       query: new GraphQLObjectType({
-        name: 'RootQueryType',
+        name: 'Query',
         fields: queryFields,
       }),
       mutation: new GraphQLObjectType({
-        name: 'RootMutationType',
+        name: 'Mutation',
         fields: mutationFields,
       }),
     }),
     source: JSON.parse(event.body).query,
+    variableValues: JSON.parse(event.body).variables,
   })
   return {
     statusCode: 200,
