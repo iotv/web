@@ -1,4 +1,4 @@
-import {DynamoDB} from 'aws-sdk'
+import {Config, EnvironmentCredentials, DynamoDB} from 'aws-sdk'
 import {
   graphql,
   GraphQLSchema,
@@ -11,6 +11,11 @@ import {
 } from 'graphql'
 import {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
 import * as Yup from 'yup'
+
+const config = new Config({
+  region: 'us-east-1',
+  credentials: new EnvironmentCredentials('AWS'),
+})
 
 const userType = new GraphQLObjectType({
   name: 'User',
@@ -39,7 +44,7 @@ const mutationFields: GraphQLFieldConfigMap<any, any> = {
       },
     },
     resolve: async (root, {email}) => {
-      const db = new DynamoDB()
+      const db = new DynamoDB(config)
       await Yup.string()
         .email()
         .validate(email)
