@@ -1,4 +1,4 @@
-import {config, DynamoDB} from 'aws-sdk'
+import {config, DynamoDB, EnvironmentCredentials} from 'aws-sdk'
 import {
   graphql,
   GraphQLSchema,
@@ -11,8 +11,6 @@ import {
 } from 'graphql'
 import {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
 import * as Yup from 'yup'
-
-config.update({region: 'us-east-1'})
 
 const userType = new GraphQLObjectType({
   name: 'User',
@@ -90,6 +88,10 @@ export async function handleGraphQL(
   event: Partial<APIGatewayProxyEvent>,
   context: Partial<Context>,
 ): Promise<APIGatewayProxyResult> {
+  config.update({
+    region: 'us-east-1',
+    credentials: new EnvironmentCredentials(''),
+  })
   const result = await graphql({
     schema: new GraphQLSchema({
       query: new GraphQLObjectType({
