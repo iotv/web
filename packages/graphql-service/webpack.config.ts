@@ -29,6 +29,7 @@ const config: webpack.Configuration = {
     ],
   },
   plugins: [new CheckerPlugin(), new CleanWebpackPlugin()],
+  target: 'node',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'main.js',
