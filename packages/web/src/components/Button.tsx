@@ -18,7 +18,7 @@ export const Button: FunctionComponent<Partial<ButtonProps>> = props => {
   return (
     <button
       className={
-        'flex bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded'
+        'flex flex-grow justify-center bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded'
       }
       disabled={props.disabled}
       onClick={onClickHandler}

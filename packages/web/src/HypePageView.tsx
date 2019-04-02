@@ -54,7 +54,7 @@ export const HypePageView: FunctionComponent = props => {
             }}
           >
             {({isSubmitting}) => (
-              <Form>
+              <Form className={'flex flex-col'}>
                 <Field name="email">
                   {(props: FieldProps) => (
                     <Input
