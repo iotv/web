@@ -6,7 +6,7 @@ import {useMutation} from 'react-apollo-hooks'
 import gql from 'graphql-tag'
 import {Input, getFormikClassName} from './components/Input'
 import {Button} from './components/Button'
-import {Formik, Form, Field, FieldProps} from 'formik'
+import {Formik, Form, Field, FieldProps, ErrorMessage} from 'formik'
 import * as Yup from 'yup'
 
 const APPLY_FOR_BETA = gql`
@@ -39,7 +39,9 @@ export const HypePageView: FunctionComponent = props => {
           'bg-gray-900 flex flex-grow flex-col items-center justify-around'
         }
       >
-        <div className={'flex flex-col items-center content-center max-w-md'}>
+        <div
+          className={'flex flex-col items-center content-center max-w-md mb-64'}
+        >
           <HypeMainHeader className={'text-center'}>
             Video By You
           </HypeMainHeader>
@@ -49,16 +51,33 @@ export const HypePageView: FunctionComponent = props => {
           <Formik
             initialValues={{email: ''}}
             validationSchema={betaSignupSchema}
-            onSubmit={({email}, {setSubmitting, setError}) => {
-              applyForBeta({variables: {email}})
+            onSubmit={async ({email}, {setSubmitting, setFieldError}) => {
+              try {
+                setSubmitting(true)
+                await applyForBeta({variables: {email}})
+              } catch {
+                setFieldError('email', 'Email already registered')
+              } finally {
+                setSubmitting(false)
+              }
             }}
           >
-            {({isSubmitting}) => (
+            {({isSubmitting, errors}) => (
               <Form className={'flex flex-col'}>
+                {isSubmitting ? (
+                  <div className="text-sm text-gray-100">Submitting...</div>
+                ) : (
+                  ''
+                )}
+                <ErrorMessage name="email">
+                  {msg => <div className="text-sm text-gray-100">{msg}</div>}
+                </ErrorMessage>
                 <Field name="email">
                   {(props: FieldProps) => (
                     <Input
-                      className={`${getFormikClassName(props)} mb-4 mt-4`}
+                      className={`${getFormikClassName(props)} mb-2 ${
+                        errors.email ? '' : 'border-red border border-4'
+                      }`}
                       {...props.field}
                       placeholder="Email"
                       type="email"

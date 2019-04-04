@@ -16,13 +16,13 @@ export function getFormikClassName(props: FieldProps) {
     props.form.touched[props.field.name] &&
     props.form.errors[props.field.name]
   ) {
-    return 'border-red-300 hover:border-red-500 text-red focus:text-gray-900'
+    return 'border-red-500 hover:border-red-700 border-2 text-red-500 focus:text-gray-900'
   }
 }
 
 export const Input: FunctionComponent<Partial<Props>> = props => (
   <input
-    className={`block appearance-none bg-white border border-gray-300 hover:border-gray-500 px-2 py-2 rounded shadow ${props.className ||
+    className={`block appearance-none bg-white border-gray-300 hover:border-gray-500 px-2 py-2 rounded shadow ${props.className ||
       ''}`}
     name={props.name}
     onBlur={props.onBlur}
