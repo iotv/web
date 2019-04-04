@@ -9,6 +9,8 @@ import {Button} from './components/Button'
 import {Formik, Form, Field, FieldProps, ErrorMessage} from 'formik'
 import * as Yup from 'yup'
 
+import Logo from './iotv.svg'
+
 const APPLY_FOR_BETA = gql`
   mutation applyForBeta($email: String!) {
     applyForBeta(email: $email)
@@ -27,14 +29,12 @@ export const HypePageView: FunctionComponent = props => {
 
   return (
     <div className={'flex flex-col min-h-screen'}>
-      <div className={'bg-gray-800 h-12'}>
-        <span
-          className={
-            'text-gray-300 text-3xl m-3 font-mono font-extrabold italic'
-          }
-        >
-          iotv
-        </span>
+      <div className={'flex flex-row items-center bg-gray-800 h-12'}>
+        <img
+          className={'text-gray-300 ml-4 font-mono h-8 font-extrabold italic'}
+          src={Logo}
+          alt="Logo"
+        />
       </div>
       <div
         className={
