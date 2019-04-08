@@ -8,7 +8,6 @@
     "aws-sdk": "^2.432.0",
     "cuid": "^2.1.6",
     "graphql": "^14.2.0",
-    "webpack": "^4.29.6",
     "yup": "^0.27.0"
   },
   "devDependencies": {

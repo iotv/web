@@ -10,7 +10,12 @@
     "generate": "yarn run lerna run generate",
     "test": "yarn run lerna run test"
   },
-  "workspaces": [
-    "packages/*"
-  ]
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**"
+    ]
+  }
 }
