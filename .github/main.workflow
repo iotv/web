@@ -5,7 +5,7 @@ workflow "Build, test and deploy on push" {
 
 # Level 0
 action "Install Dependencies" {
-  uses = "docker://node"
+  uses = "docker://node:8"
   runs = ["yarn"]
   args = ["install", "--frozen-lockfile"]  
 }
@@ -42,14 +42,14 @@ action "Test" {
   args = ["test"]
   needs = ["Install Dependencies"]
   runs = ["yarn"]
-  uses = "docker://node"
+  uses = "docker://node:8"
 }
 
 action "Build" {
   args = ["build"]
   needs = ["Install Dependencies"]
   runs = ["yarn"]
-  uses = "docker://node"
+  uses = "docker://node:8"
 }
 
 action "Pulumi 1 Web" {
