@@ -6,13 +6,13 @@ const config = new pulumi.Config('pulumi-1-graphql-service')
 const domainStack = new pulumi.StackReference(config.require('codeDeployStack'))
 
 const graphqlLambda = new ServiceLambdaFunction('graphql', {
-  handler: 'main.handleGraphQL',
+  handler: 'dist/main.handleGraphQL',
   s3Bucket: domainStack.getOutput('bucketName'),
   s3Key: config.require('graphql'),
 })
 
 const graphqlPreflightLambda = new ServiceLambdaFunction('preflightGraphQL', {
-  handler: 'main.handleCorsPreflight',
+  handler: 'dist/main.handleCorsPreflight',
   s3Bucket: domainStack.getOutput('bucketName'),
   s3Key: config.require('graphql'),
 })

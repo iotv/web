@@ -38,6 +38,10 @@ const config: webpack.Configuration = {
         from: '../../node_modules/argon2/build/Release/argon2.node',
         to: 'build/Release',
       },
+      {
+        from: 'package.json',
+        to: 'package.json',
+      },
     ]),
   ],
   target: 'node',
