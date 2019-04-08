@@ -1,3 +1,4 @@
+import * as argon2 from 'argon2'
 import * as AWS from 'aws-sdk'
 import {
   graphql,
@@ -6,28 +7,20 @@ import {
   GraphQLFieldConfigMap,
   GraphQLString,
   GraphQLNonNull,
-  GraphQLID,
   GraphQLBoolean,
 } from 'graphql'
 import {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
-import * as Yup from 'yup'
+
+import {User, UserAuthContainer} from './graphql-types'
+import {signUpWithEmailAndPassword, applyForBeta} from './resolvers'
 
 AWS.config.update({
   region: 'us-east-1',
 })
 
-const userType = new GraphQLObjectType({
-  name: 'User',
-  fields: {
-    id: {
-      type: GraphQLNonNull(GraphQLID),
-    },
-  },
-})
-
 const queryFields: GraphQLFieldConfigMap<any, any> = {
   User: {
-    type: userType,
+    type: User,
     resolve: () => ({
       id: 'hola',
     }),
@@ -42,30 +35,30 @@ const mutationFields: GraphQLFieldConfigMap<any, any> = {
         type: GraphQLNonNull(GraphQLString),
       },
     },
-    resolve: async (root, {email}) => {
-      const db = new AWS.DynamoDB()
-      await Yup.string()
-        .email()
-        .validate(email)
-      await db
-        .transactWriteItems({
-          TransactItems: [
-            {
-              Put: {
-                ConditionExpression: 'attribute_not_exists(Email)',
-                Item: {
-                  Email: {S: email},
-                },
-                TableName: 'BetaApplications-dev-ee01dc8',
-              },
-            },
-          ],
-        })
-        .promise()
-      // FIXME: handle cases when it doesn't work
-      return true
-    },
+    resolve: applyForBeta,
     type: GraphQLBoolean,
+  },
+  signUpWithEmailAndPassword: {
+    args: {
+      email: {
+        description: 'email with which to register',
+        type: GraphQLNonNull(GraphQLString),
+      },
+      inviteToken: {
+        description: 'token granted to allow beta registration',
+        type: GraphQLNonNull(GraphQLString),
+      },
+      password: {
+        description: 'password used in the future for authentication',
+        type: GraphQLNonNull(GraphQLString),
+      },
+      userName: {
+        description: 'username used for public presentation of a user',
+        type: GraphQLNonNull(GraphQLString),
+      },
+    },
+    resolve: signUpWithEmailAndPassword,
+    type: UserAuthContainer,
   },
 }
 

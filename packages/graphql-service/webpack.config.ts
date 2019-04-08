@@ -2,10 +2,12 @@ import path from 'path'
 import webpack from 'webpack'
 import {CheckerPlugin} from 'awesome-typescript-loader'
 import CleanWebpackPlugin from 'clean-webpack-plugin'
+import CopyPlugin from 'copy-webpack-plugin'
 
 const config: webpack.Configuration = {
   mode: 'production',
   entry: './src/handler.ts',
+  externals: './build/Release/argon2',
   resolve: {
     extensions: ['.mjs', '.ts', '.tsx', '.js', '.jsx'],
   },
@@ -28,7 +30,16 @@ const config: webpack.Configuration = {
       },
     ],
   },
-  plugins: [new CheckerPlugin(), new CleanWebpackPlugin()],
+  plugins: [
+    new CheckerPlugin(),
+    new CleanWebpackPlugin(),
+    new CopyPlugin([
+      {
+        from: '../../node_modules/argon2/build/Release/argon2.node',
+        to: 'build/Release',
+      },
+    ]),
+  ],
   target: 'node',
   output: {
     path: path.resolve(__dirname, 'dist'),
