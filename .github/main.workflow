@@ -10,6 +10,18 @@ action "Install Dependencies" {
   args = ["install", "--frozen-lockfile"]  
 }
 
+action "Password Service Test" {
+  args = ["test"]
+  runs = ["go"]
+  uses = "docker://go:alpine"
+}
+
+action "Password Service Build" {
+  args = ["build"]
+  runs = ["go"]
+  uses = "docker://go:alpine"
+}
+
 action "Pulumi 0 Code Deploy" {
   secrets = [
     "PULUMI_ACCESS_TOKEN",
@@ -38,14 +50,14 @@ action "Pulumi 0 User DB" {
 }
 
 # Level 1
-action "Test" {
+action "Lerna Test" {
   args = ["test"]
   needs = ["Install Dependencies"]
   runs = ["yarn"]
   uses = "docker://node:8"
 }
 
-action "Build" {
+action "Lerna Build" {
   args = ["build"]
   needs = ["Install Dependencies"]
   runs = ["yarn"]
