@@ -1,10 +1,12 @@
 import * as pulumi from '@pulumi/pulumi'
 import * as aws from '@pulumi/aws'
+import {Runtime} from '@pulumi/aws/lambda'
 
 type ServiceLambdaFunctionArgs = {
   s3Bucket: pulumi.Input<string>
   s3Key: pulumi.Input<string>
   handler: pulumi.Input<string>
+  runtime: pulumi.Input<Runtime>
 }
 
 export class ServiceLambdaFunction extends pulumi.ComponentResource {
@@ -47,7 +49,7 @@ export class ServiceLambdaFunction extends pulumi.ComponentResource {
         new aws.lambda.Function(
           `${name}`,
           {
-            runtime: aws.lambda.NodeJS8d10Runtime,
+            runtime: args.runtime,
             role,
             handler: args.handler,
             s3Bucket: args.s3Bucket,
