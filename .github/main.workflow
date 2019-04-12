@@ -13,13 +13,13 @@ action "Install Dependencies" {
 action "Password Service Test" {
   args = ["test"]
   runs = ["go"]
-  uses = "docker://go:alpine"
+  uses = "docker://golang:alpine"
 }
 
 action "Password Service Build" {
   args = ["build"]
   runs = ["go"]
-  uses = "docker://go:alpine"
+  uses = "docker://golang:alpine"
 }
 
 action "Pulumi 0 Code Deploy" {
