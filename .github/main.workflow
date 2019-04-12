@@ -80,7 +80,7 @@ action "Deploy Web" {
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
-  needs = ["Build", "Pulumi 1 Web", "Test"]
+  needs = ["Lerna Build", "Pulumi 1 Web", "Lerna Test"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
   uses = "actions/aws/cli@master"
 }
@@ -89,7 +89,7 @@ action "Deploy API" {
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
-  needs = ["Build", "Pulumi 0 Code Deploy", "Pulumi 0 User DB", "Test"]
+  needs = ["Lerna Build", "Pulumi 0 Code Deploy", "Pulumi 0 User DB", "Lerna Test", "Password Service Test", "Password Service Build"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
   uses = "./.github/actions/deploy-api"
 }
