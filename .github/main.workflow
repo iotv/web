@@ -10,15 +10,24 @@ action "Install Dependencies" {
   args = ["install", "--frozen-lockfile"]  
 }
 
-action "Password Service Test" {
-  args = ["test"]
+action "Create Password Hash Build" {
+  args = [
+    "build",
+    "-o",
+    "packages/password-service/dist/verify-password-hash",
+    "packages/password-service/handlers/verify-password-hash/main.go"
+  ]
   runs = ["go"]
   uses = "docker://golang:alpine"
 }
 
-action "Password Service Build" {
-  args = ["build"]
-  runs = ["go"]
+action "Verify Password Hash Build" {
+  args = [
+    "build",
+    "-o",
+    "packages/password-service/dist/create-password-hash",
+    "packages/password-service/handlers/create-password-hash/main.go"
+  ]  runs = ["go"]
   uses = "docker://golang:alpine"
 }
 
@@ -89,7 +98,7 @@ action "Deploy API" {
   env = {
     AWS_DEFAULT_REGION = "us-east-1"
   }
-  needs = ["Lerna Build", "Pulumi 0 Code Deploy", "Pulumi 0 User DB", "Lerna Test", "Password Service Test", "Password Service Build"]
+  needs = ["Lerna Build", "Pulumi 0 Code Deploy", "Pulumi 0 User DB", "Lerna Test", "Create Password Hash Build", "Verify Password Hash Build"]
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
   uses = "./.github/actions/deploy-api"
 }
