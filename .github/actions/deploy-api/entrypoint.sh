@@ -12,6 +12,6 @@ aws s3api put-object --bucket `jq -r .bucketName ../../pulumi/pulumi-0-code-depl
 cd ../../
 cd packages/password-service/
 zip dist/create-password-hash.zip dist/create-password-hash
-zip dist/validate-password-hash.zip dist/validate-password-hash
+zip dist/verify-password-hash.zip dist/verify-password-hash
 aws s3api put-object --bucket `jq -r .bucketName ../../pulumi/pulumi-0-code-deploy/dist/output.json` --key "password/create-password-hash.${GITHUB_SHA}.zip" --body dist/create-password-hash.zip
-aws s3api put-object --bucket `jq -r .bucketName ../../pulumi/pulumi-0-code-deploy/dist/output.json` --key "password/validate-password-hash.${GITHUB_SHA}.zip" --body dist/validate-password-hash.zip
+aws s3api put-object --bucket `jq -r .bucketName ../../pulumi/pulumi-0-code-deploy/dist/output.json` --key "password/verify-password-hash.${GITHUB_SHA}.zip" --body dist/verify-password-hash.zip

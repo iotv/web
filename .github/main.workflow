@@ -14,8 +14,8 @@ action "Create Password Hash Build" {
   args = [
     "build",
     "-o",
-    "packages/password-service/dist/verify-password-hash",
-    "packages/password-service/handlers/verify-password-hash/main.go"
+    "packages/password-service/dist/create-password-hash",
+    "packages/password-service/handlers/create-password-hash/main.go"
   ]
   runs = ["go"]
   uses = "docker://golang"
@@ -25,8 +25,8 @@ action "Verify Password Hash Build" {
   args = [
     "build",
     "-o",
-    "packages/password-service/dist/create-password-hash",
-    "packages/password-service/handlers/create-password-hash/main.go"
+    "packages/password-service/dist/verify-password-hash",
+    "packages/password-service/handlers/verify-password-hash/main.go"
   ]  runs = ["go"]
   uses = "docker://golang"
 }
