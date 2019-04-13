@@ -18,7 +18,7 @@ action "Create Password Hash Build" {
     "packages/password-service/handlers/verify-password-hash/main.go"
   ]
   runs = ["go"]
-  uses = "docker://golang:alpine"
+  uses = "docker://golang"
 }
 
 action "Verify Password Hash Build" {
@@ -28,7 +28,7 @@ action "Verify Password Hash Build" {
     "packages/password-service/dist/create-password-hash",
     "packages/password-service/handlers/create-password-hash/main.go"
   ]  runs = ["go"]
-  uses = "docker://golang:alpine"
+  uses = "docker://golang"
 }
 
 action "Pulumi 0 Code Deploy" {
