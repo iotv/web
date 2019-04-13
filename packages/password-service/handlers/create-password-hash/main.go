@@ -15,7 +15,7 @@ type CreatePasswordHashEvent struct {
 }
 
 type CreatePasswordHashResult struct {
-	HashString string `json:"hashString"`
+	PasswordHash string `json:"passwordHash"`
 }
 
 // Argon2 settings

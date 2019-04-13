@@ -34,7 +34,7 @@ export const signUpWithEmailAndPassword: GraphQLFieldResolver<
       Payload: JSON.stringify({password}),
     })
     .promise()
-  const {hashedPassword} = JSON.parse(createPasswordResponse.Payload as string)
+  const {passwordHash} = JSON.parse(createPasswordResponse.Payload as string)
   const userId = cuid()
 
   await db
@@ -46,7 +46,7 @@ export const signUpWithEmailAndPassword: GraphQLFieldResolver<
             Item: {
               Email: {S: email},
               EmailAuthenticationId: {S: emailAuthenticationId},
-              HashedPassword: {S: hashedPassword},
+              HashedPassword: {S: passwordHash},
               UserId: {S: userId},
             },
             TableName: 'EmailAuthentications-dev-31915e6',
