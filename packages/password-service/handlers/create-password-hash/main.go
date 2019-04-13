@@ -23,7 +23,7 @@ const (
 	// The current recommended time value for interactive login.
 	RecommendedTime uint32 = 1
 	// The current recommended memory for interactive login.
-	RecommendedMemory uint32 = 512 * 1024
+	RecommendedMemory uint32 = 64 * 1024
 	// The current recommended number of threads for interactive login.
 	RecommendedThreads uint8 = 4
 	// The recommended salt length

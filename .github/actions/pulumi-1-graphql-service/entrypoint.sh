@@ -7,7 +7,7 @@ mkdir dist
 yarn install --frozen-lockfile
 pulumi config set graphql graphql/graphql.${GITHUB_SHA}.zip --stack dev
 pulumi config set createPasswordHash password/create-password-hash.${GITHUB_SHA}.zip --stack dev
-pulumi config set validatePasswordHash password/validate-password-hash.${GITHUB_SHA}.zip --stack dev
+pulumi config set verifyPasswordHash password/verify-password-hash.${GITHUB_SHA}.zip --stack dev
 
 pulumi --non-interactive \
     up \
