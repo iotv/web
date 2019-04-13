@@ -46,7 +46,7 @@ func CreatePasswordHash(_ context.Context, e CreatePasswordHashEvent) (*CreatePa
 	sstr := base64.RawStdEncoding.EncodeToString(salt)
 
 	encoded := fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, RecommendedMemory, RecommendedTime, RecommendedThreads, sstr, hstr)
-	return &CreatePasswordHashResult{HashString: encoded}, nil
+	return &CreatePasswordHashResult{PasswordHash: encoded}, nil
 }
 
 func main() {
