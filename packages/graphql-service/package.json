@@ -4,7 +4,6 @@
     "@types/aws-sdk": "^2.7.0",
     "@types/graphql": "^14.0.7",
     "@types/yup": "^0.26.12",
-    "argon2": "^0.21.0",
     "aws-sdk": "^2.432.0",
     "cuid": "^2.1.6",
     "graphql": "^14.2.0",

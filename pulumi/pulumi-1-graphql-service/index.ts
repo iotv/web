@@ -40,6 +40,34 @@ const verifyPasswordHashLambda = new ServiceLambdaFunction(
   },
 )
 
+const passwordServicePolicy = pulumi
+  .all([
+    createPasswordHashLambda.lambdaFunction.apply(it => it.arn),
+    verifyPasswordHashLambda.lambdaFunction.apply(it => it.arn),
+  ])
+  .apply(([createPasswordHashArn, verifyPasswordHashArn]) => {
+    const passwordServicePolicyDocument: aws.iam.PolicyDocument = {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: ['lambda:InvokeFunction'],
+          Effect: 'Allow',
+          Resource: [createPasswordHashArn, verifyPasswordHashArn],
+        },
+      ],
+    }
+    return new aws.iam.Policy('passwordService', {
+      policy: JSON.stringify(passwordServicePolicyDocument),
+    })
+  })
+
+const passwordServicePolicyAttachment = passwordServicePolicy.apply(policy => {
+  new aws.iam.PolicyAttachment('graphqlCanCallPassword', {
+    policyArn: policy.arn,
+    roles: [graphqlLambda.iamRole],
+  })
+})
+
 const httpService = pulumi
   .all([pulumi.output(graphqlLambda), pulumi.output(graphqlPreflightLambda)])
   .apply(

@@ -1,4 +1,3 @@
-import * as argon2 from 'argon2'
 import * as AWS from 'aws-sdk'
 import cuid from 'cuid'
 import {GraphQLFieldResolver} from 'graphql'
@@ -27,8 +26,15 @@ export const signUpWithEmailAndPassword: GraphQLFieldResolver<
     userName,
   })
 
+  const lambda = new AWS.Lambda()
   const emailAuthenticationId = cuid()
-  const hashedPassword = await argon2.hash(password)
+  const createPasswordResponse = await lambda
+    .invoke({
+      FunctionName: 'createPasswordHash-ca0dc85',
+      Payload: JSON.stringify({password}),
+    })
+    .promise()
+  const {hashedPassword} = JSON.parse(createPasswordResponse.Payload as string)
   const userId = cuid()
 
   await db
