@@ -30,13 +30,13 @@ const createPasswordHashLambda = new ServiceLambdaFunction(
   },
 )
 
-const validatePasswordHashLambda = new ServiceLambdaFunction(
-  'validatePasswordHash',
+const verifyPasswordHashLambda = new ServiceLambdaFunction(
+  'verifyPasswordHash',
   {
-    handler: 'validate-password-hash',
+    handler: 'verify-password-hash',
     runtime: aws.lambda.Go1dxRuntime,
     s3Bucket: domainStack.getOutput('bucketName'),
-    s3Key: config.require('validatePasswordHash'),
+    s3Key: config.require('verifyPasswordHash'),
   },
 )
 
