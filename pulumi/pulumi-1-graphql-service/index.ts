@@ -23,10 +23,20 @@ const graphqlPreflightLambda = new ServiceLambdaFunction('preflightGraphQL', {
 const createPasswordHashLambda = new ServiceLambdaFunction(
   'createPasswordHash',
   {
-    handler: 'handler',
+    handler: 'create-password-hash',
     runtime: aws.lambda.Go1dxRuntime,
     s3Bucket: domainStack.getOutput('bucketName'),
     s3Key: config.require('createPasswordHash'),
+  },
+)
+
+const validatePasswordHashLambda = new ServiceLambdaFunction(
+  'validatePasswordHash',
+  {
+    handler: 'validate-password-hash',
+    runtime: aws.lambda.Go1dxRuntime,
+    s3Bucket: domainStack.getOutput('bucketName'),
+    s3Key: config.require('validatePasswordHash'),
   },
 )
 

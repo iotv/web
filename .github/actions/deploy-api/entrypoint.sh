@@ -10,7 +10,7 @@ zip -r dist/graphql.zip ./*
 aws s3api put-object --bucket `jq -r .bucketName ../../pulumi/pulumi-0-code-deploy/dist/output.json` --key "graphql/graphql.${GITHUB_SHA}.zip" --body dist/graphql.zip
 
 cd packages/password-service/
-zip dist/createPasswordHash.zip dist/createPasswordHash
-zip dist/validatePasswordHash.zip dist/validatePasswordHash
-aws s3api put-object --bucket `jq -r .bucketName ../../pulumi/pulumi-0-code-deploy/dist/output.json` --key "password/createPassword.${GITHUB_SHA}.zip" --body dist/createPassword.zip
-aws s3api put-object --bucket `jq -r .bucketName ../../pulumi/pulumi-0-code-deploy/dist/output.json` --key "password/validatePassword.${GITHUB_SHA}.zip" --body dist/validatePassword.zip
+zip dist/create-password-hash.zip dist/create-password-hash
+zip dist/validate-password-hash.zip dist/validate-password-hash
+aws s3api put-object --bucket `jq -r .bucketName ../../pulumi/pulumi-0-code-deploy/dist/output.json` --key "password/create-password-hash.${GITHUB_SHA}.zip" --body dist/create-password-hash.zip
+aws s3api put-object --bucket `jq -r .bucketName ../../pulumi/pulumi-0-code-deploy/dist/output.json` --key "password/validate-password-hash.${GITHUB_SHA}.zip" --body dist/validate-password-hash.zip
