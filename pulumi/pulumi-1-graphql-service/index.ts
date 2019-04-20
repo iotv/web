@@ -2,24 +2,42 @@ import * as pulumi from '@pulumi/pulumi'
 import * as aws from '@pulumi/aws'
 import {ServiceLambdaFunction} from './src/service'
 import {HttpService} from './src/http-service/service'
+import {Output} from '@pulumi/pulumi'
+import {Policy} from '@pulumi/aws/iam'
 
 const config = new pulumi.Config('pulumi-1-graphql-service')
-const domainStack = new pulumi.StackReference(config.require('codeDeployStack'))
+const codeDeployStack = new pulumi.StackReference(
+  config.require('codeDeployStack'),
+)
+const userDBStack = new pulumi.StackReference(config.require('userDBSrack'))
+const userDBPolicies: Output<Policy>[] = [
+  userDBStack
+    .getOutput('authentications')
+    .apply(db => db.readWriteAccessPolicy),
+  userDBStack
+    .getOutput('betaApplications')
+    .apply(db => db.readWriteAccessPolicy),
+  userDBStack.getOutput('betaInvites').apply(db => db.readWriteAccessPolicy),
+  userDBStack
+    .getOutput('emailAuthentications')
+    .apply(db => db.readWriteAccessPolicy),
+  userDBStack.getOutput('users').apply(db => db.readWriteAccessPolicy),
+]
 
 const graphqlLambda = new ServiceLambdaFunction('graphql', {
   handler: 'dist/src/handler.handleGraphQL',
   runtime: aws.lambda.NodeJS8d10Runtime,
-  s3Bucket: domainStack.getOutput('bucketName'),
+  s3Bucket: codeDeployStack.getOutput('bucketName'),
   s3Key: config.require('graphql'),
-  iamPolicies: [],
+  iamPolicies: userDBPolicies,
 })
 
 const graphqlPreflightLambda = new ServiceLambdaFunction('preflightGraphQL', {
   handler: 'dist/src/handler.handleCorsPreflight',
   runtime: aws.lambda.NodeJS8d10Runtime,
-  s3Bucket: domainStack.getOutput('bucketName'),
+  s3Bucket: codeDeployStack.getOutput('bucketName'),
   s3Key: config.require('graphql'),
-  iamPolicies: [],
+  iamPolicies: userDBPolicies,
 })
 
 const createPasswordHashLambda = new ServiceLambdaFunction(
@@ -27,9 +45,9 @@ const createPasswordHashLambda = new ServiceLambdaFunction(
   {
     handler: 'dist/create-password-hash',
     runtime: aws.lambda.Go1dxRuntime,
-    s3Bucket: domainStack.getOutput('bucketName'),
+    s3Bucket: codeDeployStack.getOutput('bucketName'),
     s3Key: config.require('createPasswordHash'),
-    iamPolicies: [],
+    iamPolicies: userDBPolicies,
   },
 )
 
@@ -38,9 +56,9 @@ const verifyPasswordHashLambda = new ServiceLambdaFunction(
   {
     handler: 'dist/verify-password-hash',
     runtime: aws.lambda.Go1dxRuntime,
-    s3Bucket: domainStack.getOutput('bucketName'),
+    s3Bucket: codeDeployStack.getOutput('bucketName'),
     s3Key: config.require('verifyPasswordHash'),
-    iamPolicies: [],
+    iamPolicies: userDBPolicies,
   },
 )
 

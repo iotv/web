@@ -8,7 +8,7 @@ type ServiceLambdaFunctionArgs = {
   s3Key: pulumi.Input<string>
   handler: pulumi.Input<string>
   runtime: pulumi.Input<Runtime>
-  iamPolicies: Policy[]
+  iamPolicies: pulumi.Output<Policy>[]
 }
 
 export class ServiceLambdaFunction extends pulumi.ComponentResource {
@@ -19,7 +19,9 @@ export class ServiceLambdaFunction extends pulumi.ComponentResource {
   public readonly cloudwatchLogsIamPolicyAttachment: pulumi.Output<
     aws.iam.PolicyAttachment
   >
-  public readonly iamPolicyAttachments: aws.iam.PolicyAttachment[]
+  public readonly iamPolicyAttachments: pulumi.Output<
+    aws.iam.PolicyAttachment
+  >[]
 
   constructor(
     name: string,
@@ -117,13 +119,15 @@ export class ServiceLambdaFunction extends pulumi.ComponentResource {
           ),
       )
 
-    this.iamPolicyAttachments = args.iamPolicies.map(
-      policy =>
-        new aws.iam.PolicyAttachment(
-          `${name}-${policy.name}`,
-          {policyArn: policy.arn, roles: [this.iamRole]},
-          {parent: this},
-        ),
+    this.iamPolicyAttachments = args.iamPolicies.map(output =>
+      output.apply(
+        policy =>
+          new aws.iam.PolicyAttachment(
+            `${name}-${policy.name}`,
+            {policyArn: policy.arn, roles: [this.iamRole]},
+            {parent: this},
+          ),
+      ),
     )
 
     this.registerOutputs({
@@ -132,6 +136,7 @@ export class ServiceLambdaFunction extends pulumi.ComponentResource {
       cloudwatchLogsIamPolicy: this.cloudwatchLogsIamPolicy,
       cloudwatchLogGroup: this.cloudwatchLogGroup,
       cloudwatchLogsIamPolicyAtachment: this.cloudwatchLogsIamPolicyAttachment,
+      iamPolicyAttachments: this.iamPolicyAttachments,
     })
   }
 }
