@@ -9,7 +9,7 @@ const config = new pulumi.Config('pulumi-1-graphql-service')
 const codeDeployStack = new pulumi.StackReference(
   config.require('codeDeployStack'),
 )
-const userDBStack = new pulumi.StackReference(config.require('userDBSrack'))
+const userDBStack = new pulumi.StackReference(config.require('userDBStack'))
 const userDBPolicies: Output<Policy>[] = [
   userDBStack
     .getOutput('authentications')
