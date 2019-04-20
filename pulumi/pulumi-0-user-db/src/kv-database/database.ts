@@ -62,6 +62,7 @@ export class DynamoDB extends pulumi.ComponentResource {
                     Action: [
                       'dynamodb:PutItem',
                       'dynamodb:GetItem',
+                      'dynamodb:DeleteItem',
                       'dynamodb:Scan',
                       'dynamodb:Query',
                       'dynamodb:UpdateItem',
