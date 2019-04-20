@@ -27,6 +27,7 @@ export const signUpWithEmailAndPassword: GraphQLFieldResolver<
   })
 
   const lambda = new AWS.Lambda()
+  const authenticationId = cuid()
   const emailAuthenticationId = cuid()
   const createPasswordResponse = await lambda
     .invoke({
@@ -40,6 +41,28 @@ export const signUpWithEmailAndPassword: GraphQLFieldResolver<
   await db
     .transactWriteItems({
       TransactItems: [
+        {
+          Put: {
+            ConditionExpression: 'attribute_not_exists(AuthenticationId)',
+            Item: {
+              AuthenticationId: {S: authenticationId},
+              EmailAuthenticationId: {S: emailAuthenticationId},
+              UserId: {S: userId},
+            },
+            TableName: 'Authentications-dev-e97c67f',
+          },
+        },
+        {
+          Put: {
+            ConditionExpression: 'attribute_not_exists(EmailAuthenticationId)',
+            Item: {
+              EmailAuthenticationId: {S: emailAuthenticationId},
+              AuthenticationId: {S: authenticationId},
+            },
+            TableName:
+              'Authentications-devEmailAuthenticationIdUniqueIndex-6807c98',
+          },
+        },
         {
           Put: {
             ConditionExpression: 'attribute_not_exists(EmailAuthenticationId)',
