@@ -1,22 +1,25 @@
 import * as pulumi from '@pulumi/pulumi'
 import * as aws from '@pulumi/aws'
-import {Runtime} from '@pulumi/aws/lambda'
+import {Policy, Role} from '@pulumi/aws/iam'
+import {Function, Runtime} from '@pulumi/aws/lambda'
 
 type ServiceLambdaFunctionArgs = {
   s3Bucket: pulumi.Input<string>
   s3Key: pulumi.Input<string>
   handler: pulumi.Input<string>
   runtime: pulumi.Input<Runtime>
+  iamPolicies: Policy[]
 }
 
 export class ServiceLambdaFunction extends pulumi.ComponentResource {
-  public readonly iamRole: aws.iam.Role
-  public readonly lambdaFunction: pulumi.Output<aws.lambda.Function>
-  public readonly cloudwatchLogsIamPolicy: pulumi.Output<aws.iam.Policy>
+  public readonly iamRole: Role
+  public readonly lambdaFunction: pulumi.Output<Function>
+  public readonly cloudwatchLogsIamPolicy: pulumi.Output<Policy>
   public readonly cloudwatchLogGroup: pulumi.Output<aws.cloudwatch.LogGroup>
   public readonly cloudwatchLogsIamPolicyAttachment: pulumi.Output<
     aws.iam.PolicyAttachment
   >
+  public readonly iamPolicyAttachments: aws.iam.PolicyAttachment[]
 
   constructor(
     name: string,
@@ -113,6 +116,15 @@ export class ServiceLambdaFunction extends pulumi.ComponentResource {
             {parent: this},
           ),
       )
+
+    this.iamPolicyAttachments = args.iamPolicies.map(
+      policy =>
+        new aws.iam.PolicyAttachment(
+          `${name}-${policy.name}`,
+          {policyArn: policy.arn, roles: [this.iamRole]},
+          {parent: this},
+        ),
+    )
 
     this.registerOutputs({
       iamRole: this.iamRole,

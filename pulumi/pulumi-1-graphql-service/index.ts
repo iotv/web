@@ -11,6 +11,7 @@ const graphqlLambda = new ServiceLambdaFunction('graphql', {
   runtime: aws.lambda.NodeJS8d10Runtime,
   s3Bucket: domainStack.getOutput('bucketName'),
   s3Key: config.require('graphql'),
+  iamPolicies: [],
 })
 
 const graphqlPreflightLambda = new ServiceLambdaFunction('preflightGraphQL', {
@@ -18,6 +19,7 @@ const graphqlPreflightLambda = new ServiceLambdaFunction('preflightGraphQL', {
   runtime: aws.lambda.NodeJS8d10Runtime,
   s3Bucket: domainStack.getOutput('bucketName'),
   s3Key: config.require('graphql'),
+  iamPolicies: [],
 })
 
 const createPasswordHashLambda = new ServiceLambdaFunction(
@@ -27,6 +29,7 @@ const createPasswordHashLambda = new ServiceLambdaFunction(
     runtime: aws.lambda.Go1dxRuntime,
     s3Bucket: domainStack.getOutput('bucketName'),
     s3Key: config.require('createPasswordHash'),
+    iamPolicies: [],
   },
 )
 
@@ -37,6 +40,7 @@ const verifyPasswordHashLambda = new ServiceLambdaFunction(
     runtime: aws.lambda.Go1dxRuntime,
     s3Bucket: domainStack.getOutput('bucketName'),
     s3Key: config.require('verifyPasswordHash'),
+    iamPolicies: [],
   },
 )
 
