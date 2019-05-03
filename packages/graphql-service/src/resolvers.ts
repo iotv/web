@@ -1,7 +1,77 @@
 import * as AWS from 'aws-sdk'
 import cuid from 'cuid'
+import {Context} from 'aws-lambda'
+import {CookieMixin} from './graphql-types'
 import {GraphQLFieldResolver} from 'graphql'
 import * as Yup from 'yup'
+
+export const applyForBeta: GraphQLFieldResolver<any, any> = async (
+  root,
+  {email},
+) => {
+  const db = new AWS.DynamoDB()
+  await Yup.string()
+    .email()
+    .validate(email)
+  await db
+    .transactWriteItems({
+      TransactItems: [
+        {
+          Put: {
+            ConditionExpression: 'attribute_not_exists(Email)',
+            Item: {
+              Email: {S: email},
+            },
+            TableName: 'BetaApplications-dev-ee01dc8',
+          },
+        },
+      ],
+    })
+    .promise()
+  // FIXME: handle cases when it doesn't work
+  return true
+}
+
+export const loginWithEmailAndPassword: GraphQLFieldResolver<
+  any,
+  Context & CookieMixin
+> = async (root, {email, password}, context) => {
+  const db = new AWS.DynamoDB()
+  const lambda = new AWS.Lambda()
+
+  await Yup.object({
+    email: Yup.string()
+      .email()
+      .required(),
+    password: Yup.string()
+      .min(8)
+      .required(),
+  }).validate({email, password})
+
+  let emailAuthentication
+  try {
+    emailAuthentication = await db
+      .getItem({
+        Key: {S: email},
+        TableName: 'EmailAuthentications-devEmailUniqueIndex-1c47cd5',
+      })
+      .promise()
+  } catch {
+    emailAuthentication = null
+  }
+
+  let authValidation
+  try {
+    authValidation = await lambda
+      .invoke({
+        // FIXME: Correct function name here
+        FunctionName: 'verifyPasswordHash',
+        Payload: JSON.stringify({password}),
+      })
+      .promise()
+  } catch {}
+  context.cookieJar.setCookie('test')
+}
 
 export const signUpWithEmailAndPassword: GraphQLFieldResolver<
   any,
@@ -145,34 +215,7 @@ export const signUpWithEmailAndPassword: GraphQLFieldResolver<
     .promise()
 
   return {
-    token: '',
-    user: {},
+    id: userId,
+    userName,
   }
-}
-
-export const applyForBeta: GraphQLFieldResolver<any, any> = async (
-  root,
-  {email},
-) => {
-  const db = new AWS.DynamoDB()
-  await Yup.string()
-    .email()
-    .validate(email)
-  await db
-    .transactWriteItems({
-      TransactItems: [
-        {
-          Put: {
-            ConditionExpression: 'attribute_not_exists(Email)',
-            Item: {
-              Email: {S: email},
-            },
-            TableName: 'BetaApplications-dev-ee01dc8',
-          },
-        },
-      ],
-    })
-    .promise()
-  // FIXME: handle cases when it doesn't work
-  return true
 }

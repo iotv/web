@@ -10,8 +10,12 @@ import {
 } from 'graphql'
 import {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
 
-import {User, UserAuthContainer} from './graphql-types'
-import {signUpWithEmailAndPassword, applyForBeta} from './resolvers'
+import {User} from './graphql-types'
+import {
+  applyForBeta,
+  loginWithEmailAndPassword,
+  signUpWithEmailAndPassword,
+} from './resolvers'
 
 AWS.config.update({
   region: 'us-east-1',
@@ -37,6 +41,22 @@ const mutationFields: GraphQLFieldConfigMap<any, any> = {
     resolve: applyForBeta,
     type: GraphQLBoolean,
   },
+
+  loginWithEmailAndPassword: {
+    args: {
+      email: {
+        description: 'email for authentication',
+        type: GraphQLNonNull(GraphQLString),
+      },
+      password: {
+        description: 'password for authentication',
+        type: GraphQLNonNull(GraphQLString),
+      },
+    },
+    resolve: loginWithEmailAndPassword,
+    type: User,
+  },
+
   signUpWithEmailAndPassword: {
     args: {
       email: {
@@ -57,7 +77,7 @@ const mutationFields: GraphQLFieldConfigMap<any, any> = {
       },
     },
     resolve: signUpWithEmailAndPassword,
-    type: UserAuthContainer,
+    type: User,
   },
 }
 
@@ -84,7 +104,16 @@ export async function handleGraphQL(
   event: Partial<APIGatewayProxyEvent>,
   context: Partial<Context>,
 ): Promise<APIGatewayProxyResult> {
+  let cookie: string
   const result = await graphql({
+    contextValue: {
+      ...context,
+      cookieJar: {
+        setCookie: (val: string) => {
+          cookie = val
+        },
+      },
+    },
     schema: new GraphQLSchema({
       query: new GraphQLObjectType({
         name: 'Query',
@@ -109,6 +138,7 @@ export async function handleGraphQL(
         'content-type',
         'x-apollo-tracing',
       ].join(','),
+      'Set-Cookie': `auth=${cookie}; Secure`,
     },
   }
 }

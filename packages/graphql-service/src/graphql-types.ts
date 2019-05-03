@@ -1,13 +1,4 @@
-import {
-  graphql,
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLFieldConfigMap,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLBoolean,
-} from 'graphql'
+import {GraphQLObjectType, GraphQLNonNull, GraphQLID} from 'graphql'
 
 export const User = new GraphQLObjectType({
   name: 'User',
@@ -18,14 +9,8 @@ export const User = new GraphQLObjectType({
   },
 })
 
-export const UserAuthContainer = new GraphQLObjectType({
-  name: 'AuthContainer',
-  fields: {
-    token: {
-      type: GraphQLNonNull(GraphQLString),
-    },
-    user: {
-      type: GraphQLNonNull(User),
-    },
-  },
-})
+export interface CookieMixin {
+  cookieJar: {
+    setCookie: (val: string) => void
+  }
+}
