@@ -4,6 +4,8 @@ import {Context} from 'aws-lambda'
 import {CookieMixin} from './graphql-types'
 import {GraphQLFieldResolver} from 'graphql'
 import * as Yup from 'yup'
+import {get} from 'lodash'
+import {Lambda} from 'aws-sdk'
 
 export const applyForBeta: GraphQLFieldResolver<any, any> = async (
   root,
@@ -60,17 +62,31 @@ export const loginWithEmailAndPassword: GraphQLFieldResolver<
     emailAuthentication = null
   }
 
-  let authValidation
+  let authValidation: Lambda.InvocationResponse
   try {
+    // FIXME: this should send a more valid hash
     authValidation = await lambda
       .invoke({
         // FIXME: Correct function name here
-        FunctionName: 'verifyPasswordHash',
-        Payload: JSON.stringify({password}),
+        FunctionName: 'verifyPasswordHash-735c358',
+        Payload: JSON.stringify({
+          password,
+          passwordHash: get(
+            emailAuthentication,
+            'Item.HashedPassword.S',
+            'THISALWAYSFAILS',
+          ),
+        }),
       })
       .promise()
-  } catch {}
-  context.cookieJar.setCookie('test')
+  } catch (e) {
+    // FIXME: make this error better
+    throw e
+  }
+  let {isValid} = JSON.parse(authValidation.Payload.toString())
+  if (isValid === true) {
+    context.cookieJar.setCookie('test')
+  }
 }
 
 export const signUpWithEmailAndPassword: GraphQLFieldResolver<
