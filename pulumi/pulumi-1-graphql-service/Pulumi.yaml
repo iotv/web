@@ -1,3 +1,0 @@
-name: pulumi-1-graphql-service
-runtime: nodejs
-description: A minimal AWS TypeScript Pulumi program
